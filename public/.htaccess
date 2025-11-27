@@ -1,0 +1,83 @@
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
+    RewriteEngine On
+
+    # Handle Authorization Header
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Redirect Trailing Slashes If Not A Folder...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} (.+)/$
+    RewriteRule ^ %1 [L,R=301]
+
+    # Allow direct access to uploads folder
+    RewriteCond %{REQUEST_URI} ^/uploads/
+    RewriteRule ^ - [L]
+
+    # Send Requests To Front Controller...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [L]
+</IfModule>
+
+# Security Headers for Shared Hosting
+<IfModule mod_headers.c>
+    # Prevent clickjacking
+    Header always set X-Frame-Options "SAMEORIGIN"
+    
+    # XSS Protection
+    Header always set X-XSS-Protection "1; mode=block"
+    
+    # Prevent MIME type sniffing
+    Header always set X-Content-Type-Options "nosniff"
+    
+    # Referrer Policy
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+    # Allow CORS for fonts and images
+    <FilesMatch "\.(ttf|ttc|otf|eot|woff|woff2|font.css|css|js|png|jpg|jpeg|gif|svg|ico)$">
+        Header set Access-Control-Allow-Origin "*"
+        Header set Access-Control-Allow-Methods "GET, OPTIONS"
+        Header set Access-Control-Allow-Headers "*"
+    </FilesMatch>
+</IfModule>
+
+# PHP Memory Limit for Shared Hosting
+# Increase memory limit to handle large product data
+# Note: Some hosts may override this, check with your hosting provider
+<IfModule mod_php.c>
+    php_value memory_limit 512M
+    php_value max_execution_time 300
+    php_value post_max_size 100M
+    php_value upload_max_filesize 100M
+</IfModule>
+
+# For PHP 8.x (most shared hosts now use this)
+<IfModule mod_php8.c>
+    php_value memory_limit 512M
+    php_value max_execution_time 300
+    php_value post_max_size 100M
+    php_value upload_max_filesize 100M
+</IfModule>
+
+# Alternative: Use php_flag if php_value doesn't work
+# php_flag memory_limit 512M
+
+# Disable directory browsing
+Options -Indexes
+
+# Protect sensitive files
+<FilesMatch "\.(env|log|ini|conf|sql|bak|backup|old|orig|save|swp|tmp)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+

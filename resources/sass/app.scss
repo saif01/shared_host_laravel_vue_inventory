@@ -1,0 +1,266 @@
+@use 'variables';
+
+// run for install "npm install bootstrap sass"
+
+@use 'bootstrap/scss/bootstrap';
+
+// mdi icons
+@import '@mdi/font/css/materialdesignicons.css';
+
+// preloader
+@import url('../css/common/preloader.css');
+
+// CP font 
+@import url('../css/common/font.css');
+
+// Common app styles
+@import url('../css/app.css');
+
+// ============================================
+// CSS Custom Properties (Variables) for Admin Layout
+// ============================================
+// Central color management for admin panel components
+// Users can customize these colors from here
+
+:root {
+    // Gradient Colors - Primary Theme
+    --admin-gradient-start: #2c73d2;
+    --admin-gradient-end: #008f7a;
+    --admin-gradient-primary: linear-gradient(135deg, var(--admin-gradient-start) 0%, var(--admin-gradient-end) 100%);
+
+    // Alternative gradient reference (for backward compatibility)
+    --project-gradient-primary: var(--admin-gradient-primary);
+
+    // Gradient RGB values for rgba() usage
+    --admin-gradient-start-rgb: 44, 115, 210;
+    --admin-gradient-end-rgb: 0, 143, 122;
+
+    // White overlay opacity values (for backgrounds, borders, etc.)
+    --admin-overlay-very-light: rgba(255, 255, 255, 0.08);
+    --admin-overlay-dark: rgba(255, 255, 255, 0.1);
+    --admin-overlay-light: rgba(255, 255, 255, 0.15);
+    --admin-overlay-medium: rgba(255, 255, 255, 0.2);
+    --admin-overlay-medium-plus: rgba(255, 255, 255, 0.25);
+    --admin-overlay-strong: rgba(255, 255, 255, 0.3);
+    --admin-overlay-very-strong: rgba(255, 255, 255, 0.9);
+    --admin-overlay-solid: rgba(255, 255, 255, 0.95);
+    --admin-overlay-full: rgba(255, 255, 255, 1);
+
+    // Text colors
+    --admin-text-primary: #ffffff;
+    --admin-text-secondary: rgba(255, 255, 255, 0.9);
+    --admin-text-muted: rgba(255, 255, 255, 0.85);
+}
+
+// ============================================
+// Admin Table Styles - Compact, Bordered & Responsive
+// ============================================
+
+// Make all tables compact and bordered
+.v-table,
+table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+    border: 1px solid rgba(0, 0, 0, 0.12) !important;
+    border-radius: 4px !important;
+    overflow: hidden !important;
+    background: #ffffff !important;
+
+    // Compact padding for all cells
+    thead th,
+    thead tr th,
+    tbody td,
+    tbody tr td {
+        padding: 8px 12px !important;
+        font-size: 0.875rem !important;
+        border: 1px solid rgba(0, 0, 0, 0.12) !important;
+        border-collapse: collapse !important;
+    }
+
+    // Table header styles
+    thead th,
+    thead tr th {
+        background: var(--admin-gradient-start) !important;
+        color: var(--admin-text-primary) !important;
+        font-weight: 600 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.2) !important;
+        white-space: nowrap !important;
+
+        &:not(:last-child) {
+            border-right: 1px solid rgba(255, 255, 255, 0.2) !important;
+        }
+    }
+
+    // Table body styles
+    tbody {
+        tr {
+            transition: background-color 0.2s ease !important;
+
+            &:hover {
+                background-color: rgba(0, 0, 0, 0.04) !important;
+            }
+
+            &:nth-child(even) {
+                background-color: rgba(0, 0, 0, 0.02) !important;
+            }
+
+            td {
+                border-right: 1px solid rgba(0, 0, 0, 0.12) !important;
+                vertical-align: middle !important;
+
+                &:last-child {
+                    border-right: none !important;
+                }
+            }
+        }
+
+        // Empty state
+        tr:last-child td[colspan] {
+            text-align: center !important;
+            padding: 24px !important;
+            color: rgba(0, 0, 0, 0.6) !important;
+            border: none !important;
+        }
+    }
+}
+
+// Responsive table wrapper
+.table-responsive,
+.v-card-text>.v-table,
+.v-card-text>table {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+}
+
+.table-responsive {
+    border: 1px solid rgba(0, 0, 0, 0.12) !important;
+    border-radius: 4px !important;
+
+    .v-table,
+    table {
+        margin: 0 !important;
+        min-width: 600px !important;
+    }
+}
+
+// Auto-wrap tables in card text areas for responsive behavior
+.v-card-text {
+
+    .v-table,
+    table {
+        position: relative !important;
+    }
+
+    @media (max-width: 960px) {
+
+        .v-table,
+        table {
+            display: block !important;
+            overflow-x: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+        }
+    }
+}
+
+// Sortable header hover effect
+.v-table thead th.sortable:hover,
+.v-table thead tr th.sortable:hover,
+table thead th.sortable:hover,
+table thead tr th.sortable:hover {
+    background: var(--admin-gradient-end) !important;
+    cursor: pointer !important;
+    transition: background 0.3s ease !important;
+}
+
+// Sortable header active/sorted state
+.v-table thead th.sortable.active,
+.v-table thead tr th.sortable.active,
+table thead th.sortable.active,
+table thead tr th.sortable.active {
+    background: var(--admin-gradient-end) !important;
+    box-shadow: inset 0 -3px 0 rgba(255, 255, 255, 0.5) !important;
+}
+
+// Responsive breakpoints
+@media (max-width: 960px) {
+
+    .v-table,
+    table {
+        font-size: 0.8125rem !important;
+
+        thead th,
+        thead tr th,
+        tbody td,
+        tbody tr td {
+            padding: 6px 10px !important;
+        }
+
+        thead th,
+        thead tr th {
+            font-size: 0.75rem !important;
+        }
+    }
+
+    .table-responsive {
+
+        .v-table,
+        table {
+            min-width: 500px !important;
+        }
+    }
+}
+
+@media (max-width: 600px) {
+
+    .v-table,
+    table {
+
+        thead th,
+        thead tr th,
+        tbody td,
+        tbody tr td {
+            padding: 6px 8px !important;
+            font-size: 0.75rem !important;
+        }
+
+        thead th,
+        thead tr th {
+            font-size: 0.6875rem !important;
+            letter-spacing: 0.3px !important;
+        }
+    }
+
+    .table-responsive {
+
+        .v-table,
+        table {
+            min-width: 450px !important;
+        }
+    }
+}
+
+// ============================================
+// SweetAlert2 Z-Index Override
+// ============================================
+// Ensure SweetAlert modals and toasts appear above Vuetify dialogs
+// Vuetify dialogs typically use z-index around 200-300
+// Setting SweetAlert to 20000 ensures it's always on top
+
+.swal2-container {
+    z-index: 20000 !important;
+}
+
+.swal2-backdrop-show {
+    z-index: 19999 !important;
+}
+
+.swal2-popup {
+    z-index: 20001 !important;
+}
+
+// Toast notifications should also appear above dialogs
+.swal2-toast {
+    z-index: 20002 !important;
+}

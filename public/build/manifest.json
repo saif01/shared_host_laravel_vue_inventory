@@ -1,0 +1,210 @@
+{
+  "_UserProfileDialog-BCG5KECv.js": {
+    "file": "assets/UserProfileDialog-BCG5KECv.js",
+    "name": "UserProfileDialog",
+    "imports": [
+      "_moment-C5S46NFB.js",
+      "_uploads-CnEkgyD_.js",
+      "resources/js/app.js"
+    ],
+    "css": [
+      "assets/UserProfileDialog-D9at4lTm.css"
+    ]
+  },
+  "_UserProfileDialog-D9at4lTm.css": {
+    "file": "assets/UserProfileDialog-D9at4lTm.css",
+    "src": "_UserProfileDialog-D9at4lTm.css"
+  },
+  "_adminPaginationMixin-DN7Wb3ng.js": {
+    "file": "assets/adminPaginationMixin-DN7Wb3ng.js",
+    "name": "adminPaginationMixin"
+  },
+  "_moment-C5S46NFB.js": {
+    "file": "assets/moment-C5S46NFB.js",
+    "name": "moment"
+  },
+  "_uploads-CnEkgyD_.js": {
+    "file": "assets/uploads-CnEkgyD_.js",
+    "name": "uploads"
+  },
+  "node_modules/@fontsource/prompt/files/prompt-latin-400-normal.woff": {
+    "file": "assets/fonts/prompt-latin-400-normal-CxU4ec_r.woff",
+    "src": "node_modules/@fontsource/prompt/files/prompt-latin-400-normal.woff"
+  },
+  "node_modules/@fontsource/prompt/files/prompt-latin-400-normal.woff2": {
+    "file": "assets/fonts/prompt-latin-400-normal-BQ9zjSN8.woff2",
+    "src": "node_modules/@fontsource/prompt/files/prompt-latin-400-normal.woff2"
+  },
+  "node_modules/@fontsource/prompt/files/prompt-latin-ext-400-normal.woff": {
+    "file": "assets/fonts/prompt-latin-ext-400-normal-1pHbN9uy.woff",
+    "src": "node_modules/@fontsource/prompt/files/prompt-latin-ext-400-normal.woff"
+  },
+  "node_modules/@fontsource/prompt/files/prompt-latin-ext-400-normal.woff2": {
+    "file": "assets/fonts/prompt-latin-ext-400-normal-DdSafGZ9.woff2",
+    "src": "node_modules/@fontsource/prompt/files/prompt-latin-ext-400-normal.woff2"
+  },
+  "node_modules/@fontsource/prompt/files/prompt-thai-400-normal.woff": {
+    "file": "assets/fonts/prompt-thai-400-normal-DJypnfr3.woff",
+    "src": "node_modules/@fontsource/prompt/files/prompt-thai-400-normal.woff"
+  },
+  "node_modules/@fontsource/prompt/files/prompt-thai-400-normal.woff2": {
+    "file": "assets/fonts/prompt-thai-400-normal-BrkKv8cO.woff2",
+    "src": "node_modules/@fontsource/prompt/files/prompt-thai-400-normal.woff2"
+  },
+  "node_modules/@fontsource/prompt/files/prompt-vietnamese-400-normal.woff": {
+    "file": "assets/fonts/prompt-vietnamese-400-normal-D4pLyeNK.woff",
+    "src": "node_modules/@fontsource/prompt/files/prompt-vietnamese-400-normal.woff"
+  },
+  "node_modules/@fontsource/prompt/files/prompt-vietnamese-400-normal.woff2": {
+    "file": "assets/fonts/prompt-vietnamese-400-normal-BCPzsgPT.woff2",
+    "src": "node_modules/@fontsource/prompt/files/prompt-vietnamese-400-normal.woff2"
+  },
+  "node_modules/@mdi/font/fonts/materialdesignicons-webfont.eot": {
+    "file": "assets/fonts/materialdesignicons-webfont-CSr8KVlo.eot",
+    "src": "node_modules/@mdi/font/fonts/materialdesignicons-webfont.eot"
+  },
+  "node_modules/@mdi/font/fonts/materialdesignicons-webfont.ttf": {
+    "file": "assets/fonts/materialdesignicons-webfont-B7mPwVP_.ttf",
+    "src": "node_modules/@mdi/font/fonts/materialdesignicons-webfont.ttf"
+  },
+  "node_modules/@mdi/font/fonts/materialdesignicons-webfont.woff": {
+    "file": "assets/fonts/materialdesignicons-webfont-PXm3-2wK.woff",
+    "src": "node_modules/@mdi/font/fonts/materialdesignicons-webfont.woff"
+  },
+  "node_modules/@mdi/font/fonts/materialdesignicons-webfont.woff2": {
+    "file": "assets/fonts/materialdesignicons-webfont-Dp5v-WZN.woff2",
+    "src": "node_modules/@mdi/font/fonts/materialdesignicons-webfont.woff2"
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-CnnV-4Hh.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true,
+    "dynamicImports": [
+      "resources/js/components/admin/AdminLayout.vue",
+      "resources/js/components/admin/AdminDashboard.vue",
+      "resources/js/components/admin/users/AdminUsers.vue",
+      "resources/js/components/admin/users/AdminRoles.vue",
+      "resources/js/components/admin/users/AdminPermissions.vue",
+      "resources/js/components/admin/settings/AdminSettings.vue",
+      "resources/js/components/admin/logs/AdminLoginLogs.vue",
+      "resources/js/components/admin/auth/AdminLogin.vue",
+      "resources/js/components/admin/auth/AdminLogin.vue"
+    ],
+    "css": [
+      "assets/app-BCLan9k3.css"
+    ]
+  },
+  "resources/js/components/admin/AdminDashboard.vue": {
+    "file": "assets/AdminDashboard-vFV4aRc_.js",
+    "name": "AdminDashboard",
+    "src": "resources/js/components/admin/AdminDashboard.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_moment-C5S46NFB.js"
+    ],
+    "css": [
+      "assets/AdminDashboard-B6gdRgXK.css"
+    ]
+  },
+  "resources/js/components/admin/AdminLayout.vue": {
+    "file": "assets/AdminLayout-DKpv4KVc.js",
+    "name": "AdminLayout",
+    "src": "resources/js/components/admin/AdminLayout.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "_moment-C5S46NFB.js",
+      "resources/js/app.js",
+      "_uploads-CnEkgyD_.js",
+      "_UserProfileDialog-BCG5KECv.js"
+    ],
+    "css": [
+      "assets/AdminLayout-BLVMEGN0.css"
+    ]
+  },
+  "resources/js/components/admin/auth/AdminLogin.vue": {
+    "file": "assets/AdminLogin-BixRkS8_.js",
+    "name": "AdminLogin",
+    "src": "resources/js/components/admin/auth/AdminLogin.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_uploads-CnEkgyD_.js"
+    ],
+    "css": [
+      "assets/AdminLogin-3PQO3-Xe.css"
+    ]
+  },
+  "resources/js/components/admin/logs/AdminLoginLogs.vue": {
+    "file": "assets/AdminLoginLogs-E51VBDwl.js",
+    "name": "AdminLoginLogs",
+    "src": "resources/js/components/admin/logs/AdminLoginLogs.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "_adminPaginationMixin-DN7Wb3ng.js",
+      "_moment-C5S46NFB.js",
+      "resources/js/app.js"
+    ],
+    "css": [
+      "assets/AdminLoginLogs-CTjjWinE.css"
+    ]
+  },
+  "resources/js/components/admin/settings/AdminSettings.vue": {
+    "file": "assets/AdminSettings-BoCFg61m.js",
+    "name": "AdminSettings",
+    "src": "resources/js/components/admin/settings/AdminSettings.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "_uploads-CnEkgyD_.js",
+      "resources/js/app.js"
+    ],
+    "css": [
+      "assets/AdminSettings-lb0m8oQt.css"
+    ]
+  },
+  "resources/js/components/admin/users/AdminPermissions.vue": {
+    "file": "assets/AdminPermissions-DUaKK0zn.js",
+    "name": "AdminPermissions",
+    "src": "resources/js/components/admin/users/AdminPermissions.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "_adminPaginationMixin-DN7Wb3ng.js",
+      "resources/js/app.js"
+    ]
+  },
+  "resources/js/components/admin/users/AdminRoles.vue": {
+    "file": "assets/AdminRoles-DEjze_s-.js",
+    "name": "AdminRoles",
+    "src": "resources/js/components/admin/users/AdminRoles.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "_adminPaginationMixin-DN7Wb3ng.js",
+      "resources/js/app.js"
+    ],
+    "css": [
+      "assets/AdminRoles-vkFpn_zw.css"
+    ]
+  },
+  "resources/js/components/admin/users/AdminUsers.vue": {
+    "file": "assets/AdminUsers-C8yL6wfo.js",
+    "name": "AdminUsers",
+    "src": "resources/js/components/admin/users/AdminUsers.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "_adminPaginationMixin-DN7Wb3ng.js",
+      "_uploads-CnEkgyD_.js",
+      "_UserProfileDialog-BCG5KECv.js",
+      "resources/js/app.js",
+      "_moment-C5S46NFB.js"
+    ],
+    "css": [
+      "assets/AdminUsers-R4f025eR.css"
+    ]
+  },
+  "resources/sass/app.scss": {
+    "file": "assets/app-DdUrxuGu.css",
+    "src": "resources/sass/app.scss",
+    "isEntry": true
+  }
+}
