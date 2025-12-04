@@ -54,12 +54,12 @@ class InventorySeeder extends Seeder
 
         // 2. Create Categories
         $categories = [
-            ['name' => 'Electronics', 'slug' => 'electronics'],
-            ['name' => 'Clothing', 'slug' => 'clothing'],
-            ['name' => 'Food & Beverages', 'slug' => 'food-beverages'],
-            ['name' => 'Office Supplies', 'slug' => 'office-supplies'],
-            ['name' => 'Furniture', 'slug' => 'furniture'],
-            ['name' => 'Tools & Hardware', 'slug' => 'tools-hardware'],
+            ['name' => 'Electronics', 'slug' => 'electronics', 'order' => 1],
+            ['name' => 'Clothing', 'slug' => 'clothing', 'order' => 2],
+            ['name' => 'Food & Beverages', 'slug' => 'food-beverages', 'order' => 3],
+            ['name' => 'Office Supplies', 'slug' => 'office-supplies', 'order' => 4],
+            ['name' => 'Furniture', 'slug' => 'furniture', 'order' => 5],
+            ['name' => 'Tools & Hardware', 'slug' => 'tools-hardware', 'order' => 6],
         ];
 
         foreach ($categories as $category) {
@@ -193,12 +193,20 @@ class InventorySeeder extends Seeder
         }
 
         // 6. Create Products (Amounts in Bangladeshi Taka ৳)
+        // Note: We use category names to find IDs dynamically
+        $electronicsCategory = Category::where('slug', 'electronics')->first();
+        $clothingCategory = Category::where('slug', 'clothing')->first();
+        $foodCategory = Category::where('slug', 'food-beverages')->first();
+        $officeCategory = Category::where('slug', 'office-supplies')->first();
+        $furnitureCategory = Category::where('slug', 'furniture')->first();
+
         $productsData = [
             [
                 'name' => 'Laptop Computer',
                 'sku' => 'LAP-001',
                 'barcode' => '1234567890123',
-                'category_id' => 1, // Electronics
+                'category_id' => $electronicsCategory?->id,
+                'sub_category_id' => null, // Will be set later if subcategories exist
                 'unit_id' => 1, // PCS
                 'description' => 'High-performance laptop computer',
                 'cost_price' => 75000.00,
@@ -211,7 +219,8 @@ class InventorySeeder extends Seeder
                 'name' => 'Wireless Mouse',
                 'sku' => 'MOU-001',
                 'barcode' => '1234567890124',
-                'category_id' => 1, // Electronics
+                'category_id' => $electronicsCategory?->id,
+                'sub_category_id' => null,
                 'unit_id' => 1, // PCS
                 'description' => 'Ergonomic wireless mouse',
                 'cost_price' => 1200.00,
@@ -224,7 +233,8 @@ class InventorySeeder extends Seeder
                 'name' => 'Office Chair',
                 'sku' => 'CHA-001',
                 'barcode' => '1234567890125',
-                'category_id' => 5, // Furniture
+                'category_id' => $furnitureCategory?->id,
+                'sub_category_id' => null,
                 'unit_id' => 1, // PCS
                 'description' => 'Comfortable office chair',
                 'cost_price' => 12000.00,
@@ -237,7 +247,8 @@ class InventorySeeder extends Seeder
                 'name' => 'Printer Paper A4',
                 'sku' => 'PAP-001',
                 'barcode' => '1234567890126',
-                'category_id' => 4, // Office Supplies
+                'category_id' => $officeCategory?->id,
+                'sub_category_id' => null,
                 'unit_id' => 3, // BOX
                 'description' => 'Premium A4 printer paper',
                 'cost_price' => 1800.00,
@@ -250,7 +261,8 @@ class InventorySeeder extends Seeder
                 'name' => 'Coffee Beans',
                 'sku' => 'COF-001',
                 'barcode' => '1234567890127',
-                'category_id' => 3, // Food & Beverages
+                'category_id' => $foodCategory?->id,
+                'sub_category_id' => null,
                 'unit_id' => 2, // KG
                 'description' => 'Premium arabica coffee beans',
                 'cost_price' => 2200.00,
@@ -263,7 +275,8 @@ class InventorySeeder extends Seeder
                 'name' => 'T-Shirt',
                 'sku' => 'TSH-001',
                 'barcode' => '1234567890128',
-                'category_id' => 2, // Clothing
+                'category_id' => $clothingCategory?->id,
+                'sub_category_id' => null,
                 'unit_id' => 1, // PCS
                 'description' => 'Cotton t-shirt',
                 'cost_price' => 800.00,

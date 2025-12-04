@@ -59,6 +59,9 @@
                     <v-list-item prepend-icon="mdi-folder-multiple" title="Categories"
                         :to="{ name: 'AdminCategories' }">
                     </v-list-item>
+                    <v-list-item prepend-icon="mdi-folder-outline" title="Subcategories"
+                        :to="{ name: 'AdminSubCategories' }">
+                    </v-list-item>
                 </v-list-group>
 
                 <!-- ============================================ -->

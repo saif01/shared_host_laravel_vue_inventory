@@ -65,6 +65,12 @@ const routes = [
                 meta: { title: 'Category Management', permissions: ['manage-products'] }
             },
             {
+                path: 'subcategories',
+                component: () => import('./components/admin/products/AdminSubCategories.vue'),
+                name: 'AdminSubCategories',
+                meta: { title: 'Subcategory Management', permissions: ['manage-products'] }
+            },
+            {
                 path: 'stock-ledger',
                 component: () => import('./components/admin/stock/AdminStockLedger.vue'),
                 name: 'AdminStockLedger',

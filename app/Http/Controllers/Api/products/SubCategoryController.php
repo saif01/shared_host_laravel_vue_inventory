@@ -3,16 +3,22 @@
 namespace App\Http\Controllers\Api\products;
 
 use App\Http\Controllers\Controller;
+use App\Models\SubCategory;
 use App\Models\Category;
 use App\Support\MediaPath;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
-class CategoryController extends Controller
+class SubCategoryController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Category::query();
+        $query = SubCategory::with('category');
+
+        // Filter by category
+        if ($request->has('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
 
         // Search by name or description
         if ($request->has('search')) {
@@ -44,20 +50,21 @@ class CategoryController extends Controller
         
         $query->orderBy($sortBy, $sortDirection);
 
-        $categories = $query->paginate($request->get('per_page', 10));
+        $subCategories = $query->paginate($request->get('per_page', 10));
 
-        $categories->getCollection()->transform(function ($category) {
-            return $this->transformCategoryImage($category);
+        $subCategories->getCollection()->transform(function ($subCategory) {
+            return $this->transformSubCategoryImage($subCategory);
         });
         
-        return response()->json($categories);
+        return response()->json($subCategories);
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'category_id' => 'required|exists:categories,id',
             'name' => 'required|string|max:255',
-            'slug' => 'nullable|string|max:255|unique:categories',
+            'slug' => 'nullable|string|max:255|unique:sub_categories',
             'order' => 'nullable|integer|min:0',
             'description' => 'nullable|string',
             'image' => 'nullable|string|max:255',
@@ -70,7 +77,7 @@ class CategoryController extends Controller
             // Ensure uniqueness
             $originalSlug = $validated['slug'];
             $counter = 1;
-            while (Category::where('slug', $validated['slug'])->exists()) {
+            while (SubCategory::where('slug', $validated['slug'])->exists()) {
                 $validated['slug'] = $originalSlug . '-' . $counter;
                 $counter++;
             }
@@ -88,21 +95,24 @@ class CategoryController extends Controller
             $validated['order'] = 0;
         }
 
-        $category = Category::create($validated);
+        $subCategory = SubCategory::create($validated);
+        $subCategory->load('category');
         
-        return response()->json($this->transformCategoryImage($category), 201);
+        return response()->json($this->transformSubCategoryImage($subCategory), 201);
     }
 
-    public function show(Category $category)
+    public function show(SubCategory $subCategory)
     {
-        return response()->json($this->transformCategoryImage($category));
+        $subCategory->load('category');
+        return response()->json($this->transformSubCategoryImage($subCategory));
     }
 
-    public function update(Request $request, Category $category)
+    public function update(Request $request, SubCategory $subCategory)
     {
         $validated = $request->validate([
+            'category_id' => 'sometimes|required|exists:categories,id',
             'name' => 'sometimes|required|string|max:255',
-            'slug' => ['sometimes', 'nullable', 'string', 'max:255', \Illuminate\Validation\Rule::unique('categories')->ignore($category->id)],
+            'slug' => ['sometimes', 'nullable', 'string', 'max:255', \Illuminate\Validation\Rule::unique('sub_categories')->ignore($subCategory->id)],
             'order' => 'nullable|integer|min:0',
             'description' => 'nullable|string',
             'image' => 'nullable|string|max:255',
@@ -115,7 +125,7 @@ class CategoryController extends Controller
             // Ensure uniqueness
             $originalSlug = $validated['slug'];
             $counter = 1;
-            while (Category::where('slug', $validated['slug'])->where('id', '!=', $category->id)->exists()) {
+            while (SubCategory::where('slug', $validated['slug'])->where('id', '!=', $subCategory->id)->exists()) {
                 $validated['slug'] = $originalSlug . '-' . $counter;
                 $counter++;
             }
@@ -125,36 +135,49 @@ class CategoryController extends Controller
             $validated['image'] = MediaPath::normalize($validated['image']);
         }
 
-        $category->update($validated);
+        $subCategory->update($validated);
+        $subCategory->load('category');
         
-        return response()->json($this->transformCategoryImage($category));
+        return response()->json($this->transformSubCategoryImage($subCategory));
     }
 
-    public function destroy(Category $category)
+    public function destroy(SubCategory $subCategory)
     {
-        // Check if category has products
-        if ($category->products()->count() > 0) {
+        // Check if subcategory has products
+        if ($subCategory->products()->count() > 0) {
             return response()->json([
-                'message' => 'Cannot delete category with associated products'
+                'message' => 'Cannot delete subcategory with associated products'
             ], 422);
         }
 
-        // Check if category has subcategories
-        if ($category->subCategories()->count() > 0) {
-            return response()->json([
-                'message' => 'Cannot delete category with associated subcategories'
-            ], 422);
-        }
-
-        $category->delete();
+        $subCategory->delete();
         
-        return response()->json(['message' => 'Category deleted successfully']);
+        return response()->json(['message' => 'Subcategory deleted successfully']);
     }
 
-    private function transformCategoryImage(Category $category): Category
+    /**
+     * Get list of parent categories for dropdown
+     */
+    public function categories()
     {
-        $category->image = MediaPath::url($category->image);
-        return $category;
+        $categories = Category::where('is_active', true)
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
+        return response()->json([
+            'categories' => $categories->map(function ($category) {
+                return [
+                    'value' => $category->id,
+                    'label' => $category->name,
+                ];
+            })
+        ]);
+    }
+
+    private function transformSubCategoryImage(SubCategory $subCategory): SubCategory
+    {
+        $subCategory->image = MediaPath::url($subCategory->image);
+        return $subCategory;
     }
 }
 

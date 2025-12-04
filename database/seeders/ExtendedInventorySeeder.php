@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Category;
+use App\Models\SubCategory;
 use App\Models\Unit;
 use App\Models\UnitConversion;
 use App\Models\Warehouse;
@@ -30,24 +31,27 @@ class ExtendedInventorySeeder extends Seeder
     {
         $admin = User::first();
         
-        // 1. Create Sub-categories
+        // 1. Update products with subcategories (if they exist)
+        $this->updateProductsWithSubCategories();
+        
+        // 2. Create Sub-categories (kept for backward compatibility, but should use SubCategorySeeder)
         $electronics = Category::where('slug', 'electronics')->first();
         if ($electronics) {
-            Category::updateOrCreate(
+            SubCategory::updateOrCreate(
                 ['slug' => 'laptops'],
                 [
                     'name' => 'Laptops',
-                    'parent_id' => $electronics->id,
+                    'category_id' => $electronics->id,
                     'order' => 1,
                     'description' => 'Laptop computers and accessories',
                 ]
             );
             
-            Category::updateOrCreate(
+            SubCategory::updateOrCreate(
                 ['slug' => 'accessories'],
                 [
                     'name' => 'Accessories',
-                    'parent_id' => $electronics->id,
+                    'category_id' => $electronics->id,
                     'order' => 2,
                     'description' => 'Computer accessories',
                 ]
@@ -56,20 +60,20 @@ class ExtendedInventorySeeder extends Seeder
         
         $clothing = Category::where('slug', 'clothing')->first();
         if ($clothing) {
-            Category::updateOrCreate(
+            SubCategory::updateOrCreate(
                 ['slug' => 'mens-clothing'],
                 [
                     'name' => 'Men\'s Clothing',
-                    'parent_id' => $clothing->id,
+                    'category_id' => $clothing->id,
                     'order' => 1,
                 ]
             );
             
-            Category::updateOrCreate(
+            SubCategory::updateOrCreate(
                 ['slug' => 'womens-clothing'],
                 [
                     'name' => 'Women\'s Clothing',
-                    'parent_id' => $clothing->id,
+                    'category_id' => $clothing->id,
                     'order' => 2,
                 ]
             );
@@ -324,6 +328,48 @@ class ExtendedInventorySeeder extends Seeder
         }
 
         $this->command->info('Extended inventory data seeded successfully!');
+    }
+
+    /**
+     * Update products with subcategories if they exist
+     */
+    private function updateProductsWithSubCategories(): void
+    {
+        // Update Laptop with Laptops subcategory
+        $laptopsSubCat = \App\Models\SubCategory::where('slug', 'laptops')->first();
+        if ($laptopsSubCat) {
+            Product::where('sku', 'LAP-001')->update(['sub_category_id' => $laptopsSubCat->id]);
+        }
+
+        // Update Mouse with Accessories subcategory
+        $accessoriesSubCat = \App\Models\SubCategory::where('slug', 'accessories')->first();
+        if ($accessoriesSubCat) {
+            Product::where('sku', 'MOU-001')->update(['sub_category_id' => $accessoriesSubCat->id]);
+        }
+
+        // Update T-Shirt with Men's Clothing subcategory
+        $mensClothingSubCat = \App\Models\SubCategory::where('slug', 'mens-clothing')->first();
+        if ($mensClothingSubCat) {
+            Product::where('sku', 'TSH-001')->update(['sub_category_id' => $mensClothingSubCat->id]);
+        }
+
+        // Update Office Chair with Office Furniture subcategory
+        $officeFurnitureSubCat = \App\Models\SubCategory::where('slug', 'office-furniture')->first();
+        if ($officeFurnitureSubCat) {
+            Product::where('sku', 'CHA-001')->update(['sub_category_id' => $officeFurnitureSubCat->id]);
+        }
+
+        // Update Paper with Paper Products subcategory
+        $paperProductsSubCat = \App\Models\SubCategory::where('slug', 'paper-products')->first();
+        if ($paperProductsSubCat) {
+            Product::where('sku', 'PAP-001')->update(['sub_category_id' => $paperProductsSubCat->id]);
+        }
+
+        // Update Coffee with Beverages subcategory
+        $beveragesSubCat = \App\Models\SubCategory::where('slug', 'beverages')->first();
+        if ($beveragesSubCat) {
+            Product::where('sku', 'COF-001')->update(['sub_category_id' => $beveragesSubCat->id]);
+        }
     }
 }
 

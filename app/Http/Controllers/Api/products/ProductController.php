@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\products;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\SubCategory;
 use App\Models\Unit;
 use App\Support\MediaPath;
 use Illuminate\Http\Request;
@@ -90,7 +91,7 @@ class ProductController extends Controller
             'sku' => 'required|string|max:255|unique:products',
             'barcode' => 'nullable|string|max:255|unique:products',
             'category_id' => 'required|exists:categories,id',
-            'sub_category_id' => 'nullable|exists:categories,id',
+            'sub_category_id' => 'nullable|exists:sub_categories,id',
             'unit_id' => 'required|exists:units,id',
             'description' => 'nullable|string',
             
@@ -185,7 +186,7 @@ class ProductController extends Controller
             'sku' => ['sometimes', 'required', 'string', 'max:255', \Illuminate\Validation\Rule::unique('products')->ignore($product->id)],
             'barcode' => ['nullable', 'string', 'max:255', \Illuminate\Validation\Rule::unique('products')->ignore($product->id)],
             'category_id' => 'sometimes|required|exists:categories,id',
-            'sub_category_id' => 'nullable|exists:categories,id',
+            'sub_category_id' => 'nullable|exists:sub_categories,id',
             'unit_id' => 'sometimes|required|exists:units,id',
             'description' => 'nullable|string',
             
@@ -288,6 +289,29 @@ class ProductController extends Controller
 
         return response()->json([
             'units' => $units
+        ]);
+    }
+
+    public function subCategories(Request $request)
+    {
+        $query = SubCategory::where('is_active', true);
+        
+        if ($request->has('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+        
+        $subCategories = $query->orderBy('order')->orderBy('name')
+            ->get()
+            ->map(function ($subCategory) {
+                return [
+                    'value' => $subCategory->id,
+                    'label' => $subCategory->name,
+                    'category_id' => $subCategory->category_id,
+                ];
+            });
+
+        return response()->json([
+            'sub_categories' => $subCategories
         ]);
     }
 

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\auth\AuthController;
 use App\Http\Controllers\Api\products\CategoryController;
+use App\Http\Controllers\Api\products\SubCategoryController;
 use App\Http\Controllers\Api\leads\LeadController;
 use App\Http\Controllers\Api\logs\LoginLogController;
 use App\Http\Controllers\Api\users\PermissionController;
@@ -131,13 +132,12 @@ Route::prefix('v1')->group(function () {
         // Products & Categories - requires manage-products permission
         Route::middleware('permission:manage-products')->group(function () {
             Route::get('products/categories', [ProductController::class, 'categories']);
+            Route::get('products/sub-categories', [ProductController::class, 'subCategories']);
             Route::get('products/units', [ProductController::class, 'units']);
             Route::apiResource('products', ProductController::class);
-            
-            // Category routes
-            Route::get('categories/tree', [CategoryController::class, 'tree']);
-            Route::get('categories/parents', [CategoryController::class, 'parents']);
             Route::apiResource('categories', CategoryController::class);
+            Route::get('sub-categories/categories', [SubCategoryController::class, 'categories']);
+            Route::apiResource('sub-categories', SubCategoryController::class);
         });
 
         // Stock Management - requires manage-stock permission

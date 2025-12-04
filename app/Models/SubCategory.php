@@ -4,13 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Category extends Model
+class SubCategory extends Model
 {
     use SoftDeletes;
 
     protected $fillable = [
+        'category_id',
         'name',
         'slug',
         'order',
@@ -24,13 +26,14 @@ class Category extends Model
         'order' => 'integer',
     ];
 
-    public function products(): HasMany
+    public function category(): BelongsTo
     {
-        return $this->hasMany(Product::class);
+        return $this->belongsTo(Category::class);
     }
 
-    public function subCategories(): HasMany
+    public function products(): HasMany
     {
-        return $this->hasMany(SubCategory::class);
+        return $this->hasMany(Product::class, 'sub_category_id');
     }
 }
+
