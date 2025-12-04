@@ -22,8 +22,8 @@
 
                                 <v-row>
                                     <v-col cols="12" md="6">
-                                        <v-text-field v-model="form.sku" label="SKU *" :rules="[rules.required]" required
-                                            hint="Stock Keeping Unit" persistent-hint></v-text-field>
+                                        <v-text-field v-model="form.sku" label="SKU *" :rules="[rules.required]"
+                                            required hint="Stock Keeping Unit" persistent-hint></v-text-field>
                                     </v-col>
                                     <v-col cols="12" md="6">
                                         <v-text-field v-model="form.barcode" label="Barcode"
@@ -98,8 +98,8 @@
                                     class="mb-4"></v-text-field>
 
                                 <v-textarea v-model="form.specifications" label="Technical Specifications"
-                                    variant="outlined" rows="3" hint="Technical details, features, etc."
-                                    persistent-hint class="mb-4"></v-textarea>
+                                    variant="outlined" rows="3" hint="Technical details, features, etc." persistent-hint
+                                    class="mb-4"></v-textarea>
 
                                 <v-divider class="mb-4"></v-divider>
                                 <div class="text-subtitle-2 font-weight-medium mb-3">Physical Dimensions</div>
@@ -125,16 +125,18 @@
 
                                 <v-row>
                                     <v-col cols="12" md="4">
-                                        <v-text-field v-model.number="form.dimensions_length" label="Length" type="number"
-                                            step="0.01" min="0" prepend-inner-icon="mdi-ruler"></v-text-field>
+                                        <v-text-field v-model.number="form.dimensions_length" label="Length"
+                                            type="number" step="0.01" min="0"
+                                            prepend-inner-icon="mdi-ruler"></v-text-field>
                                     </v-col>
                                     <v-col cols="12" md="4">
                                         <v-text-field v-model.number="form.dimensions_width" label="Width" type="number"
                                             step="0.01" min="0" prepend-inner-icon="mdi-ruler"></v-text-field>
                                     </v-col>
                                     <v-col cols="12" md="4">
-                                        <v-text-field v-model.number="form.dimensions_height" label="Height" type="number"
-                                            step="0.01" min="0" prepend-inner-icon="mdi-ruler"></v-text-field>
+                                        <v-text-field v-model.number="form.dimensions_height" label="Height"
+                                            type="number" step="0.01" min="0"
+                                            prepend-inner-icon="mdi-ruler"></v-text-field>
                                     </v-col>
                                 </v-row>
                             </div>
@@ -145,9 +147,10 @@
                             <div class="pa-6">
                                 <v-row>
                                     <v-col cols="12" md="6">
-                                        <v-text-field v-model.number="form.cost_price" label="Cost Price *" type="number"
-                                            step="0.01" min="0" :rules="[rules.required, rules.minValue]" required
-                                            prefix="৳" prepend-inner-icon="mdi-cash-minus" class="mb-4"></v-text-field>
+                                        <v-text-field v-model.number="form.cost_price" label="Cost Price *"
+                                            type="number" step="0.01" min="0" :rules="[rules.required, rules.minValue]"
+                                            required prefix="৳" prepend-inner-icon="mdi-cash-minus"
+                                            class="mb-4"></v-text-field>
                                     </v-col>
                                     <v-col cols="12" md="6">
                                         <v-text-field v-model.number="form.selling_price" label="Selling Price *"
@@ -189,8 +192,9 @@
                                         <strong>Tax ({{ form.tax_rate }}%):</strong> +৳{{ formatPrice(calculateTax) }}
                                     </div>
                                     <v-divider class="my-2"></v-divider>
-                                    <div class="text-h6"><strong>Final Price:</strong> ৳{{ formatPrice(calculateFinalPrice)
-                                        }}</div>
+                                    <div class="text-h6"><strong>Final Price:</strong> ৳{{
+                                        formatPrice(calculateFinalPrice)
+                                    }}</div>
                                 </v-alert>
                             </div>
                         </v-window-item>
@@ -202,8 +206,9 @@
 
                                 <v-row>
                                     <v-col cols="12" md="6">
-                                        <v-text-field v-model.number="form.minimum_stock_level" label="Minimum Stock Level"
-                                            type="number" min="0" prepend-inner-icon="mdi-package-variant"
+                                        <v-text-field v-model.number="form.minimum_stock_level"
+                                            label="Minimum Stock Level" type="number" min="0"
+                                            prepend-inner-icon="mdi-package-variant"
                                             hint="Alert when stock falls below this level" persistent-hint
                                             class="mb-4"></v-text-field>
                                     </v-col>
@@ -215,9 +220,10 @@
 
                                 <v-row>
                                     <v-col cols="12" md="6">
-                                        <v-text-field v-model.number="form.expiry_alert_days" label="Expiry Alert (Days)"
-                                            type="number" min="1" max="365" prepend-inner-icon="mdi-calendar-alert"
-                                            hint="Alert X days before expiry" persistent-hint></v-text-field>
+                                        <v-text-field v-model.number="form.expiry_alert_days"
+                                            label="Expiry Alert (Days)" type="number" min="1" max="365"
+                                            prepend-inner-icon="mdi-calendar-alert" hint="Alert X days before expiry"
+                                            persistent-hint></v-text-field>
                                     </v-col>
                                     <v-col cols="12" md="6">
                                         <v-switch v-model="form.expiry_alert" label="Enable Expiry Alert"
@@ -230,8 +236,9 @@
 
                                 <v-row>
                                     <v-col cols="12" md="6">
-                                        <v-switch v-model="form.track_serial" label="Track Serial Numbers" color="primary"
-                                            hint="For electronics, phones, laptops" persistent-hint></v-switch>
+                                        <v-switch v-model="form.track_serial" label="Track Serial Numbers"
+                                            color="primary" hint="For electronics, phones, laptops"
+                                            persistent-hint></v-switch>
                                     </v-col>
                                     <v-col cols="12" md="6">
                                         <v-switch v-model="form.track_imei" label="Track IMEI Numbers" color="primary"
@@ -256,11 +263,14 @@
                                     <div class="text-body-2">
                                         <strong>Tracking Tips:</strong>
                                         <ul class="ml-4 mt-2">
-                                            <li><strong>Serial/IMEI:</strong> Each unit gets a unique number (electronics)
+                                            <li><strong>Serial/IMEI:</strong> Each unit gets a unique number
+                                                (electronics)
                                             </li>
-                                            <li><strong>Batch Tracking:</strong> Group items by manufacturing date & expiry
+                                            <li><strong>Batch Tracking:</strong> Group items by manufacturing date &
+                                                expiry
                                                 (food, medicine)</li>
-                                            <li><strong>Variations:</strong> Same product in different sizes/colors (clothing)
+                                            <li><strong>Variations:</strong> Same product in different sizes/colors
+                                                (clothing)
                                             </li>
                                         </ul>
                                     </div>

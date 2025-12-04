@@ -11,18 +11,23 @@
         <v-card class="mb-4">
             <v-card-text>
                 <v-row>
-                    <v-col cols="12" md="4">
+                    <v-col cols="12" md="3">
                         <v-select v-model="perPage" :items="perPageOptions" label="Items per page"
                             prepend-inner-icon="mdi-format-list-numbered" variant="outlined" density="compact"
                             @update:model-value="onPerPageChange"></v-select>
                     </v-col>
-                    <v-col cols="12" md="4">
+                    <v-col cols="12" md="3">
+                        <v-select v-model="parentFilter" :items="parentFilterOptions" label="Filter by Type"
+                            variant="outlined" density="compact" clearable
+                            @update:model-value="loadCategories"></v-select>
+                    </v-col>
+                    <v-col cols="12" md="3">
                         <v-select v-model="activeFilter" :items="activeOptions" label="Filter by Status"
                             variant="outlined" density="compact" clearable
                             @update:model-value="loadCategories"></v-select>
                     </v-col>
-                    <v-col cols="12" md="4">
-                        <v-text-field v-model="search" label="Search by name, slug, or description"
+                    <v-col cols="12" md="3">
+                        <v-text-field v-model="search" label="Search by name, slug"
                             prepend-inner-icon="mdi-magnify" variant="outlined" density="compact" clearable
                             @input="loadCategories"></v-text-field>
                     </v-col>
@@ -36,10 +41,6 @@
                 <span>Categories</span>
                 <span class="text-caption text-grey">
                     Total Records: <strong>{{ pagination.total || 0 }}</strong>
-                    <span v-if="categories.length > 0">
-                        | Showing {{ ((currentPage - 1) * perPage) + 1 }} to {{ Math.min(currentPage * perPage,
-                            pagination.total) }} of {{ pagination.total }}
-                    </span>
                 </span>
             </v-card-title>
             <v-card-text>
@@ -52,6 +53,7 @@
                                     <v-icon :icon="getSortIcon('name')" size="small" class="ml-1"></v-icon>
                                 </div>
                             </th>
+                            <th>Hierarchy</th>
                             <th class="sortable" @click="onSort('slug')">
                                 <div class="d-flex align-center">
                                     Slug
@@ -59,42 +61,30 @@
                                 </div>
                             </th>
                             <th>Image</th>
-                            <th>Description</th>
-                            <th>Status</th>
-                            <th class="sortable" @click="onSort('created_at')">
+                            <th>Type</th>
+                            <th class="sortable" @click="onSort('order')">
                                 <div class="d-flex align-center">
-                                    Created
-                                    <v-icon :icon="getSortIcon('created_at')" size="small" class="ml-1"></v-icon>
+                                    Order
+                                    <v-icon :icon="getSortIcon('order')" size="small" class="ml-1"></v-icon>
                                 </div>
                             </th>
+                            <th>Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         <!-- Skeleton Loaders -->
                         <tr v-if="loading" v-for="n in 5" :key="`skeleton-${n}`">
-                            <td>
-                                <v-skeleton-loader type="text" width="150"></v-skeleton-loader>
-                            </td>
-                            <td>
-                                <v-skeleton-loader type="text" width="120"></v-skeleton-loader>
-                            </td>
-                            <td>
-                                <v-skeleton-loader type="image" width="50" height="50"></v-skeleton-loader>
-                            </td>
-                            <td>
-                                <v-skeleton-loader type="text" width="200"></v-skeleton-loader>
-                            </td>
-                            <td>
-                                <v-skeleton-loader type="chip" width="80" height="24"></v-skeleton-loader>
-                            </td>
-                            <td>
-                                <v-skeleton-loader type="text" width="120"></v-skeleton-loader>
-                            </td>
+                            <td><v-skeleton-loader type="text" width="150"></v-skeleton-loader></td>
+                            <td><v-skeleton-loader type="text" width="200"></v-skeleton-loader></td>
+                            <td><v-skeleton-loader type="text" width="120"></v-skeleton-loader></td>
+                            <td><v-skeleton-loader type="image" width="50" height="50"></v-skeleton-loader></td>
+                            <td><v-skeleton-loader type="chip" width="80" height="24"></v-skeleton-loader></td>
+                            <td><v-skeleton-loader type="text" width="40"></v-skeleton-loader></td>
+                            <td><v-skeleton-loader type="chip" width="80" height="24"></v-skeleton-loader></td>
                             <td>
                                 <div class="d-flex">
-                                    <v-skeleton-loader type="button" width="32" height="32"
-                                        class="mr-1"></v-skeleton-loader>
+                                    <v-skeleton-loader type="button" width="32" height="32" class="mr-1"></v-skeleton-loader>
                                     <v-skeleton-loader type="button" width="32" height="32"></v-skeleton-loader>
                                 </div>
                             </td>
@@ -102,7 +92,23 @@
                         <!-- Actual Category Data -->
                         <template v-else>
                             <tr v-for="category in categories" :key="category.id">
-                                <td>{{ category.name }}</td>
+                                <td>
+                                    <div class="d-flex align-center">
+                                        <v-icon v-if="category.has_children" size="small" color="primary" class="mr-2">
+                                            mdi-folder
+                                        </v-icon>
+                                        <v-icon v-else size="small" color="grey" class="mr-2">
+                                            mdi-tag-outline
+                                        </v-icon>
+                                        {{ category.name }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div v-if="category.hierarchy_path" class="text-body-2 text-grey">
+                                        {{ category.hierarchy_path }}
+                                    </div>
+                                    <span v-else class="text-caption text-grey">Root Category</span>
+                                </td>
                                 <td>
                                     <v-chip size="small" variant="outlined">{{ category.slug }}</v-chip>
                                 </td>
@@ -110,21 +116,26 @@
                                     <v-avatar size="50" v-if="category.image">
                                         <v-img :src="category.image" :alt="category.name"></v-img>
                                     </v-avatar>
-                                    <span v-else class="text-caption text-grey">No image</span>
+                                    <span v-else class="text-caption text-grey">-</span>
                                 </td>
                                 <td>
-                                    <span v-if="category.description" class="text-body-2">
-                                        {{ category.description.length > 50 ? category.description.substring(0, 50) +
-                                            '...' : category.description }}
-                                    </span>
-                                    <span v-else class="text-caption text-grey">-</span>
+                                    <v-chip size="small" :color="category.parent_id ? 'info' : 'primary'" variant="tonal">
+                                        {{ category.parent_id ? 'Subcategory' : 'Parent' }}
+                                    </v-chip>
+                                    <div v-if="category.has_children" class="text-caption text-grey mt-1">
+                                        {{ category.children_count }} {{ category.children_count === 1 ? 'child' : 'children' }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <v-chip size="small" color="grey-lighten-2">
+                                        {{ category.order || 0 }}
+                                    </v-chip>
                                 </td>
                                 <td>
                                     <v-chip :color="category.is_active ? 'success' : 'error'" size="small">
                                         {{ category.is_active ? 'Active' : 'Inactive' }}
                                     </v-chip>
                                 </td>
-                                <td>{{ formatDate(category.created_at) }}</td>
                                 <td>
                                     <v-btn size="small" icon="mdi-pencil" @click="openDialog(category)" variant="text"
                                         :title="'Edit Category'"></v-btn>
@@ -133,27 +144,21 @@
                                 </td>
                             </tr>
                             <tr v-if="categories.length === 0">
-                                <td colspan="7" class="text-center py-4">No categories found</td>
+                                <td colspan="8" class="text-center py-4">No categories found</td>
                             </tr>
                         </template>
                     </tbody>
                 </v-table>
 
-                <!-- Pagination and Records Info -->
-                <div
-                    class="d-flex flex-column flex-md-row justify-space-between align-center align-md-start gap-3 mt-4">
+                <!-- Pagination -->
+                <div class="d-flex flex-column flex-md-row justify-space-between align-center align-md-start gap-3 mt-4">
                     <div class="text-caption text-grey">
                         <span v-if="categories.length > 0 && pagination.total > 0">
                             Showing <strong>{{ ((currentPage - 1) * perPage) + 1 }}</strong> to
                             <strong>{{ Math.min(currentPage * perPage, pagination.total) }}</strong> of
                             <strong>{{ pagination.total.toLocaleString() }}</strong> records
-                            <span v-if="pagination.last_page > 1" class="ml-2">
-                                (Page {{ currentPage }} of {{ pagination.last_page }})
-                            </span>
                         </span>
-                        <span v-else>
-                            No records found
-                        </span>
+                        <span v-else>No records found</span>
                     </div>
                     <div v-if="pagination.last_page > 1" class="d-flex align-center gap-2">
                         <v-pagination v-model="currentPage" :length="pagination.last_page" :total-visible="7"
@@ -173,11 +178,22 @@
                 <v-card-text class="pa-0">
                     <v-form ref="form" @submit.prevent="saveCategory">
                         <div class="pa-6">
-                            <v-text-field v-model="form.name" label="Category Name" :rules="[rules.required]" required
+                            <v-text-field v-model="form.name" label="Category Name *" :rules="[rules.required]" required
                                 class="mb-4"></v-text-field>
+
+                            <v-select v-model="form.parent_id" :items="parentCategories" item-title="label"
+                                item-value="value" label="Parent Category" clearable
+                                hint="Leave empty for root category" persistent-hint class="mb-4">
+                                <template v-slot:prepend-inner>
+                                    <v-icon>mdi-folder-open</v-icon>
+                                </template>
+                            </v-select>
 
                             <v-text-field v-model="form.slug" label="Slug" hint="Auto-generated from category name"
                                 persistent-hint class="mb-4" readonly></v-text-field>
+
+                            <v-text-field v-model.number="form.order" label="Display Order" type="number" min="0"
+                                hint="Lower numbers appear first" persistent-hint class="mb-4"></v-text-field>
 
                             <v-textarea v-model="form.description" label="Description" variant="outlined" rows="3"
                                 hint="Brief description about the category" persistent-hint class="mb-4"></v-textarea>
@@ -201,26 +217,23 @@
                                 <!-- File Upload -->
                                 <v-file-input v-model="imageFile" label="Upload Image" variant="outlined"
                                     density="comfortable" color="primary" accept="image/*" prepend-icon="mdi-image"
-                                    hint="Upload a category image (JPG, PNG, GIF, WebP - Max 5MB). Recommended size: 400x400px"
-                                    persistent-hint show-size @update:model-value="handleImageUpload" class="mb-3">
+                                    hint="Upload a category image (JPG, PNG, GIF, WebP - Max 5MB)"
+                                    persistent-hint show-size @update:model-value="handleImageUpload">
                                     <template v-slot:append-inner v-if="uploadingImage">
                                         <v-progress-circular indeterminate size="20"
                                             color="primary"></v-progress-circular>
                                     </template>
                                 </v-file-input>
-
-                                <!-- Or Enter URL -->
-                                <v-text-field v-model="form.image" label="Or Enter Image URL" variant="outlined"
-                                    density="comfortable" color="primary" hint="Enter a direct URL to the image"
-                                    persistent-hint prepend-inner-icon="mdi-link">
-                                    <template v-slot:append-inner v-if="form.image && !imageFile">
-                                        <v-btn icon="mdi-open-in-new" variant="text" size="small"
-                                            @click="window.open(resolveImageUrl(form.image), '_blank')"></v-btn>
-                                    </template>
-                                </v-text-field>
                             </div>
 
-                            <v-switch v-model="form.is_active" label="Active" color="success" class="mb-4"></v-switch>
+                            <v-switch v-model="form.is_active" label="Active Category" color="success" class="mb-4"></v-switch>
+
+                            <v-alert v-if="editingCategory && editingCategory.has_children" type="info" variant="tonal" density="compact">
+                                <div class="text-body-2">
+                                    This category has {{ editingCategory.children_count }} subcategory(ies). 
+                                    Deleting or changing parent will affect them.
+                                </div>
+                            </v-alert>
                         </div>
                     </v-form>
                 </v-card-text>
@@ -245,6 +258,12 @@ export default {
     data() {
         return {
             categories: [],
+            parentCategories: [],
+            parentFilter: null,
+            parentFilterOptions: [
+                { title: 'Root Categories Only', value: 'root' },
+                { title: 'Subcategories Only', value: 'sub' }
+            ],
             activeFilter: null,
             activeOptions: [
                 { title: 'Active', value: true },
@@ -254,10 +273,12 @@ export default {
             editingCategory: null,
             saving: false,
             form: {
+                parent_id: null,
                 name: '',
                 slug: '',
                 description: '',
                 image: '',
+                order: 0,
                 is_active: true,
             },
             rules: {
@@ -268,6 +289,7 @@ export default {
         };
     },
     async mounted() {
+        await this.loadParentCategories();
         await this.loadCategories();
     },
     watch: {
@@ -286,11 +308,11 @@ export default {
                 .toString()
                 .toLowerCase()
                 .trim()
-                .replace(/\s+/g, '-')           // Replace spaces with -
-                .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
-                .replace(/\-\-+/g, '-')         // Replace multiple - with single -
-                .replace(/^-+/, '')             // Trim - from start of text
-                .replace(/-+$/, '');            // Trim - from end of text
+                .replace(/\s+/g, '-')
+                .replace(/[^\w\-]+/g, '')
+                .replace(/\-\-+/g, '-')
+                .replace(/^-+/, '')
+                .replace(/-+$/, '');
         },
         async loadCategories() {
             try {
@@ -303,6 +325,13 @@ export default {
                 if (this.activeFilter !== null) {
                     params.is_active = this.activeFilter;
                 }
+                if (this.parentFilter) {
+                    params.parent_id = this.parentFilter === 'root' ? 'null' : null;
+                    if (this.parentFilter === 'sub') {
+                        // We'll need to filter client-side or add backend support
+                        // For now, we load all and filter
+                    }
+                }
 
                 const response = await this.$axios.get('/api/v1/categories', {
                     params,
@@ -310,11 +339,34 @@ export default {
                 });
 
                 this.categories = response.data.data || [];
+                
+                // Client-side filter for subcategories if needed
+                if (this.parentFilter === 'sub') {
+                    this.categories = this.categories.filter(cat => cat.parent_id !== null);
+                }
+                
                 this.updatePagination(response.data);
             } catch (error) {
                 this.handleApiError(error, 'Failed to load categories');
             } finally {
                 this.loading = false;
+            }
+        },
+        async loadParentCategories() {
+            try {
+                const params = {};
+                if (this.editingCategory) {
+                    params.exclude_id = this.editingCategory.id;
+                }
+                
+                const response = await this.$axios.get('/api/v1/categories/parents', {
+                    params,
+                    headers: this.getAuthHeaders()
+                });
+
+                this.parentCategories = response.data.parents || [];
+            } catch (error) {
+                console.error('Error loading parent categories:', error);
             }
         },
         openDialog(category) {
@@ -323,32 +375,39 @@ export default {
                 this.editingCategory = category;
                 const imagePath = this.normalizeImageInput(category.image || '');
                 this.form = {
+                    parent_id: category.parent_id || null,
                     name: category.name || '',
                     slug: category.slug || '',
                     description: category.description || '',
                     image: imagePath,
+                    order: category.order || 0,
                     is_active: category.is_active !== undefined ? category.is_active : true,
                 };
             } else {
                 this.editingCategory = null;
                 this.form = {
+                    parent_id: null,
                     name: '',
                     slug: '',
                     description: '',
                     image: '',
+                    order: 0,
                     is_active: true,
                 };
             }
+            this.loadParentCategories();
             this.dialog = true;
         },
         closeDialog() {
             this.dialog = false;
             this.editingCategory = null;
             this.form = {
+                parent_id: null,
                 name: '',
                 slug: '',
                 description: '',
                 image: '',
+                order: 0,
                 is_active: true,
             };
             this.imageFile = null;
@@ -448,6 +507,7 @@ export default {
                 );
                 this.closeDialog();
                 await this.loadCategories();
+                await this.loadParentCategories();
             } catch (error) {
                 console.error('Error saving category:', error);
                 let message = 'Error saving category';
@@ -481,6 +541,7 @@ export default {
 
                 this.showSuccess('Category deleted successfully');
                 await this.loadCategories();
+                await this.loadParentCategories();
             } catch (error) {
                 this.handleApiError(error, 'Error deleting category');
             }

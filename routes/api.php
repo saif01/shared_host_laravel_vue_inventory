@@ -133,6 +133,10 @@ Route::prefix('v1')->group(function () {
             Route::get('products/categories', [ProductController::class, 'categories']);
             Route::get('products/units', [ProductController::class, 'units']);
             Route::apiResource('products', ProductController::class);
+            
+            // Category routes
+            Route::get('categories/tree', [CategoryController::class, 'tree']);
+            Route::get('categories/parents', [CategoryController::class, 'parents']);
             Route::apiResource('categories', CategoryController::class);
         });
 
