@@ -52,6 +52,78 @@ const routes = [
                 name: 'AdminLoginLogs',
                 meta: { title: 'Login Logs Management', permissions: ['view-login-logs'] }
             },
+            {
+                path: 'products',
+                component: () => import('./components/admin/products/AdminProducts.vue'),
+                name: 'AdminProducts',
+                meta: { title: 'Product Management', permissions: ['manage-products'] }
+            },
+            {
+                path: 'categories',
+                component: () => import('./components/admin/products/AdminCategories.vue'),
+                name: 'AdminCategories',
+                meta: { title: 'Category Management', permissions: ['manage-products'] }
+            },
+            {
+                path: 'stock-ledger',
+                component: () => import('./components/admin/stock/AdminStockLedger.vue'),
+                name: 'AdminStockLedger',
+                meta: { title: 'Stock Ledger', permissions: ['manage-stock'] }
+            },
+            {
+                path: 'transfers',
+                component: () => import('./components/admin/stock/AdminTransfers.vue'),
+                name: 'AdminTransfers',
+                meta: { title: 'Stock Transfers', permissions: ['manage-stock'] }
+            },
+            {
+                path: 'adjustments',
+                component: () => import('./components/admin/stock/AdminAdjustments.vue'),
+                name: 'AdminAdjustments',
+                meta: { title: 'Stock Adjustments', permissions: ['manage-stock'] }
+            },
+            {
+                path: 'purchase-requests',
+                component: () => import('./components/admin/purchase/AdminPurchaseRequests.vue'),
+                name: 'AdminPurchaseRequests',
+                meta: { title: 'Purchase Requests', permissions: ['manage-purchases'] }
+            },
+            {
+                path: 'purchase-orders',
+                component: () => import('./components/admin/purchase/AdminPurchaseOrders.vue'),
+                name: 'AdminPurchaseOrders',
+                meta: { title: 'Purchase Orders', permissions: ['manage-purchases'] }
+            },
+            {
+                path: 'purchases',
+                component: () => import('./components/admin/purchase/AdminPurchases.vue'),
+                name: 'AdminPurchases',
+                meta: { title: 'Supplier Invoices', permissions: ['manage-purchases'] }
+            },
+            {
+                path: 'grns',
+                component: () => import('./components/admin/purchase/AdminGrns.vue'),
+                name: 'AdminGrns',
+                meta: { title: 'Goods Received Notes', permissions: ['manage-purchases'] }
+            },
+            {
+                path: 'purchase-returns',
+                component: () => import('./components/admin/purchase/AdminPurchaseReturns.vue'),
+                name: 'AdminPurchaseReturns',
+                meta: { title: 'Purchase Returns', permissions: ['manage-purchases'] }
+            },
+            {
+                path: 'suppliers',
+                component: () => import('./components/admin/master/AdminSuppliers.vue'),
+                name: 'AdminSuppliers',
+                meta: { title: 'Supplier Management', permissions: ['manage-master'] }
+            },
+            {
+                path: 'customers',
+                component: () => import('./components/admin/master/AdminCustomers.vue'),
+                name: 'AdminCustomers',
+                meta: { title: 'Customer Management', permissions: ['manage-master'] }
+            },
 
         ]
     },

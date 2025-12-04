@@ -128,6 +128,50 @@ Route::prefix('v1')->group(function () {
             Route::apiResource('login-logs', LoginLogController::class)->only(['index', 'show', 'destroy']);
         });
 
+        // Products & Categories - requires manage-products permission
+        Route::middleware('permission:manage-products')->group(function () {
+            Route::get('products/categories', [ProductController::class, 'categories']);
+            Route::get('products/units', [ProductController::class, 'units']);
+            Route::apiResource('products', ProductController::class);
+            Route::apiResource('categories', CategoryController::class);
+        });
+
+        // Stock Management - requires manage-stock permission
+        Route::middleware('permission:manage-stock')->group(function () {
+            Route::get('stock-ledger/warehouses', [\App\Http\Controllers\Api\stock\StockLedgerController::class, 'warehouses']);
+            Route::apiResource('stock-ledger', \App\Http\Controllers\Api\stock\StockLedgerController::class)->only(['index', 'show']);
+            Route::get('transfers/warehouses', [\App\Http\Controllers\Api\stock\TransferController::class, 'warehouses']);
+            Route::post('transfers/{id}/approve', [\App\Http\Controllers\Api\stock\TransferController::class, 'approve']);
+            Route::post('transfers/{id}/receive', [\App\Http\Controllers\Api\stock\TransferController::class, 'receive']);
+            Route::apiResource('transfers', \App\Http\Controllers\Api\stock\TransferController::class);
+            Route::get('adjustments/warehouses', [\App\Http\Controllers\Api\stock\AdjustmentController::class, 'warehouses']);
+            Route::post('adjustments/{id}/approve', [\App\Http\Controllers\Api\stock\AdjustmentController::class, 'approve']);
+            Route::post('adjustments/{id}/complete', [\App\Http\Controllers\Api\stock\AdjustmentController::class, 'complete']);
+            Route::apiResource('adjustments', \App\Http\Controllers\Api\stock\AdjustmentController::class);
+            Route::apiResource('stocks', \App\Http\Controllers\Api\stock\StockController::class)->only(['index', 'show']);
+        });
+
+        // Purchase Management - requires manage-purchases permission
+        Route::middleware('permission:manage-purchases')->group(function () {
+            Route::post('purchase-requests/{id}/approve', [\App\Http\Controllers\Api\purchase\PurchaseRequestController::class, 'approve']);
+            Route::post('purchase-requests/{id}/reject', [\App\Http\Controllers\Api\purchase\PurchaseRequestController::class, 'reject']);
+            Route::apiResource('purchase-requests', \App\Http\Controllers\Api\purchase\PurchaseRequestController::class);
+            Route::get('purchase-orders/suppliers', [\App\Http\Controllers\Api\purchase\PurchaseOrderController::class, 'suppliers']);
+            Route::apiResource('purchase-orders', \App\Http\Controllers\Api\purchase\PurchaseOrderController::class);
+            Route::post('grns/{id}/verify', [\App\Http\Controllers\Api\purchase\GrnController::class, 'verify']);
+            Route::apiResource('grns', \App\Http\Controllers\Api\purchase\GrnController::class);
+            Route::post('purchases/{id}/receive', [\App\Http\Controllers\Api\purchase\PurchaseController::class, 'receive']);
+            Route::apiResource('purchases', \App\Http\Controllers\Api\purchase\PurchaseController::class);
+            Route::post('purchase-returns/{id}/approve', [\App\Http\Controllers\Api\purchase\PurchaseReturnController::class, 'approve']);
+            Route::post('purchase-returns/{id}/complete', [\App\Http\Controllers\Api\purchase\PurchaseReturnController::class, 'complete']);
+            Route::apiResource('purchase-returns', \App\Http\Controllers\Api\purchase\PurchaseReturnController::class);
+        });
+
+        // Master Data - requires manage-master permission
+        Route::middleware('permission:manage-master')->group(function () {
+            Route::apiResource('suppliers', \App\Http\Controllers\Api\master\SupplierController::class);
+            Route::apiResource('customers', \App\Http\Controllers\Api\master\CustomerController::class);
+        });
       
     });
 });

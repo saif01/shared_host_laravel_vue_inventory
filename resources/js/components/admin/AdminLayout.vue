@@ -47,6 +47,74 @@
                 </v-list-group>
 
                 <!-- ============================================ -->
+                <!-- INVENTORY MANAGEMENT -->
+                <!-- ============================================ -->
+                <v-list-group v-if="hasPermission('manage-products')" value="inventory"
+                    prepend-icon="mdi-package-variant" no-action>
+                    <template v-slot:activator="{ props }">
+                        <v-list-item v-bind="props" title="Inventory"></v-list-item>
+                    </template>
+                    <v-list-item prepend-icon="mdi-package" title="Products" :to="{ name: 'AdminProducts' }">
+                    </v-list-item>
+                    <v-list-item prepend-icon="mdi-folder-multiple" title="Categories"
+                        :to="{ name: 'AdminCategories' }">
+                    </v-list-item>
+                </v-list-group>
+
+                <!-- ============================================ -->
+                <!-- STOCK MANAGEMENT -->
+                <!-- ============================================ -->
+                <v-list-group v-if="hasPermission('manage-stock')" value="stock" prepend-icon="mdi-warehouse" no-action>
+                    <template v-slot:activator="{ props }">
+                        <v-list-item v-bind="props" title="Stock Management"></v-list-item>
+                    </template>
+                    <v-list-item prepend-icon="mdi-book-open-variant" title="Stock Ledger"
+                        :to="{ name: 'AdminStockLedger' }">
+                    </v-list-item>
+                    <v-list-item prepend-icon="mdi-swap-horizontal" title="Transfers" :to="{ name: 'AdminTransfers' }">
+                    </v-list-item>
+                    <v-list-item prepend-icon="mdi-tune" title="Adjustments" :to="{ name: 'AdminAdjustments' }">
+                    </v-list-item>
+                </v-list-group>
+
+                <!-- ============================================ -->
+                <!-- PURCHASE MANAGEMENT -->
+                <!-- ============================================ -->
+                <v-list-group v-if="hasPermission('manage-purchases')" value="purchase"
+                    prepend-icon="mdi-cart-arrow-down" no-action>
+                    <template v-slot:activator="{ props }">
+                        <v-list-item v-bind="props" title="Purchase Management"></v-list-item>
+                    </template>
+                    <v-list-item prepend-icon="mdi-file-document-edit" title="Purchase Requests"
+                        :to="{ name: 'AdminPurchaseRequests' }">
+                    </v-list-item>
+                    <v-list-item prepend-icon="mdi-file-document" title="Purchase Orders"
+                        :to="{ name: 'AdminPurchaseOrders' }">
+                    </v-list-item>
+                    <v-list-item prepend-icon="mdi-receipt" title="Supplier Invoices" :to="{ name: 'AdminPurchases' }">
+                    </v-list-item>
+                    <v-list-item prepend-icon="mdi-package-variant-closed" title="GRNs" :to="{ name: 'AdminGrns' }">
+                    </v-list-item>
+                    <v-list-item prepend-icon="mdi-undo-variant" title="Purchase Returns"
+                        :to="{ name: 'AdminPurchaseReturns' }">
+                    </v-list-item>
+                </v-list-group>
+
+                <!-- ============================================ -->
+                <!-- MASTER DATA -->
+                <!-- ============================================ -->
+                <v-list-group v-if="hasPermission('manage-master')" value="master" prepend-icon="mdi-database"
+                    no-action>
+                    <template v-slot:activator="{ props }">
+                        <v-list-item v-bind="props" title="Master Data"></v-list-item>
+                    </template>
+                    <v-list-item prepend-icon="mdi-truck-delivery" title="Suppliers" :to="{ name: 'AdminSuppliers' }">
+                    </v-list-item>
+                    <v-list-item prepend-icon="mdi-account-group" title="Customers" :to="{ name: 'AdminCustomers' }">
+                    </v-list-item>
+                </v-list-group>
+
+                <!-- ============================================ -->
                 <!-- SYSTEM & ADMINISTRATION -->
                 <!-- ============================================ -->
                 <v-list-item v-if="hasPermission('manage-settings')" link router prepend-icon="mdi-cog" title="Settings"
@@ -130,7 +198,7 @@
                 <div class="footer-info">
                     <span class="version-badge">{{ footerVersion || 'v1.0' }}</span>
                     <span class="copyright-text">© {{ currentYear }} {{ footerCopyrightText || 'All Rights Reserved'
-                    }}</span>
+                        }}</span>
                 </div>
             </div>
         </v-footer>
