@@ -18,11 +18,13 @@
                     </v-col>
                     <v-col cols="12" md="3">
                         <v-select v-model="categoryFilter" :items="categoryOptions" label="Filter by Category"
-                            variant="outlined" density="compact" clearable @update:model-value="loadProducts"></v-select>
+                            variant="outlined" density="compact" clearable
+                            @update:model-value="loadProducts"></v-select>
                     </v-col>
                     <v-col cols="12" md="3">
                         <v-select v-model="activeFilter" :items="activeOptions" label="Filter by Status"
-                            variant="outlined" density="compact" clearable @update:model-value="loadProducts"></v-select>
+                            variant="outlined" density="compact" clearable
+                            @update:model-value="loadProducts"></v-select>
                     </v-col>
                     <v-col cols="12" md="3">
                         <v-text-field v-model="search" label="Search by name, SKU, barcode"
@@ -206,153 +208,19 @@
         </v-card>
 
         <!-- Product Dialog -->
-        <v-dialog v-model="dialog" max-width="900" scrollable persistent>
-            <v-card>
-                <v-card-title>
-                    {{ editingProduct ? 'Edit Product' : 'Add New Product' }}
-                </v-card-title>
-                <v-card-text class="pa-0">
-                    <v-form ref="form" @submit.prevent="saveProduct">
-                        <v-tabs v-model="activeTab" bg-color="grey-lighten-4">
-                            <v-tab value="basic">Basic Information</v-tab>
-                            <v-tab value="pricing">Pricing & Stock</v-tab>
-                        </v-tabs>
-
-                        <v-window v-model="activeTab">
-                            <!-- Basic Information Tab -->
-                            <v-window-item value="basic">
-                                <div class="pa-6">
-                                    <v-text-field v-model="form.name" label="Product Name" :rules="[rules.required]"
-                                        required class="mb-4"></v-text-field>
-
-                                    <v-row>
-                                        <v-col cols="12" md="6">
-                                            <v-text-field v-model="form.sku" label="SKU" :rules="[rules.required]"
-                                                required hint="Stock Keeping Unit" persistent-hint></v-text-field>
-                                        </v-col>
-                                        <v-col cols="12" md="6">
-                                            <v-text-field v-model="form.barcode" label="Barcode"
-                                                hint="Optional barcode/QR code" persistent-hint></v-text-field>
-                                        </v-col>
-                                    </v-row>
-
-                                    <v-row>
-                                        <v-col cols="12" md="6">
-                                            <v-select v-model="form.category_id" :items="categories" item-title="label"
-                                                item-value="value" label="Category" :rules="[rules.required]" required
-                                                class="mb-4"></v-select>
-                                        </v-col>
-                                        <v-col cols="12" md="6">
-                                            <v-select v-model="form.unit_id" :items="units" item-title="label"
-                                                item-value="value" label="Unit of Measure" :rules="[rules.required]"
-                                                required class="mb-4"></v-select>
-                                        </v-col>
-                                    </v-row>
-
-                                    <v-textarea v-model="form.description" label="Description" variant="outlined" rows="3"
-                                        hint="Product description" persistent-hint class="mb-4"></v-textarea>
-
-                                    <!-- Image Upload Section -->
-                                    <div class="mb-4">
-                                        <div class="text-subtitle-2 font-weight-medium mb-2">Product Image</div>
-
-                                        <!-- Image Preview -->
-                                        <div v-if="form.image" class="mb-3 text-center">
-                                            <v-avatar size="120" class="mb-2">
-                                                <v-img :src="form.image ? resolveImageUrl(form.image) : ''"
-                                                    alt="Product Preview"></v-img>
-                                            </v-avatar>
-                                            <div>
-                                                <v-btn size="small" variant="text" color="error"
-                                                    prepend-icon="mdi-delete" @click="clearImage">Remove Image</v-btn>
-                                            </div>
-                                        </div>
-
-                                        <!-- File Upload -->
-                                        <v-file-input v-model="imageFile" label="Upload Image" variant="outlined"
-                                            density="comfortable" color="primary" accept="image/*"
-                                            prepend-icon="mdi-image"
-                                            hint="Upload a product image (JPG, PNG, GIF, WebP - Max 5MB). Recommended size: 400x400px"
-                                            persistent-hint show-size @update:model-value="handleImageUpload"
-                                            class="mb-3">
-                                            <template v-slot:append-inner v-if="uploadingImage">
-                                                <v-progress-circular indeterminate size="20"
-                                                    color="primary"></v-progress-circular>
-                                            </template>
-                                        </v-file-input>
-
-                                        <!-- Or Enter URL -->
-                                        <v-text-field v-model="form.image" label="Or Enter Image URL"
-                                            variant="outlined" density="comfortable" color="primary"
-                                            hint="Enter a direct URL to the image" persistent-hint
-                                            prepend-inner-icon="mdi-link">
-                                            <template v-slot:append-inner v-if="form.image && !imageFile">
-                                                <v-btn icon="mdi-open-in-new" variant="text" size="small"
-                                                    @click="window.open(resolveImageUrl(form.image), '_blank')"></v-btn>
-                                            </template>
-                                        </v-text-field>
-                                    </div>
-
-                                    <v-switch v-model="form.track_serial" label="Track Serial Numbers"
-                                        color="primary" class="mb-4"></v-switch>
-
-                                    <v-switch v-model="form.is_active" label="Active" color="success"></v-switch>
-                                </div>
-                            </v-window-item>
-
-                            <!-- Pricing & Stock Tab -->
-                            <v-window-item value="pricing">
-                                <div class="pa-6">
-                                    <v-row>
-                                        <v-col cols="12" md="6">
-                                            <v-text-field v-model.number="form.cost_price" label="Cost Price"
-                                                type="number" step="0.01" min="0" :rules="[rules.required, rules.minValue]"
-                                                required prefix="$" class="mb-4"></v-text-field>
-                                        </v-col>
-                                        <v-col cols="12" md="6">
-                                            <v-text-field v-model.number="form.selling_price" label="Selling Price"
-                                                type="number" step="0.01" min="0"
-                                                :rules="[rules.required, rules.minValue]" required prefix="$"
-                                                class="mb-4"></v-text-field>
-                                        </v-col>
-                                    </v-row>
-
-                                    <v-row>
-                                        <v-col cols="12" md="6">
-                                            <v-text-field v-model.number="form.minimum_stock_level"
-                                                label="Minimum Stock Level" type="number" min="0"
-                                                hint="Alert when stock falls below this level" persistent-hint
-                                                class="mb-4"></v-text-field>
-                                        </v-col>
-                                        <v-col cols="12" md="6">
-                                            <v-text-field v-model.number="form.opening_stock" label="Opening Stock"
-                                                type="number" min="0"
-                                                hint="Initial stock quantity (for new products)" persistent-hint
-                                                class="mb-4"></v-text-field>
-                                        </v-col>
-                                    </v-row>
-                                </div>
-                            </v-window-item>
-                        </v-window>
-                    </v-form>
-                </v-card-text>
-                <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn @click="closeDialog" variant="text">Cancel</v-btn>
-                    <v-btn @click="saveProduct" color="primary" :loading="saving">
-                        {{ editingProduct ? 'Update' : 'Create' }}
-                    </v-btn>
-                </v-card-actions>
-            </v-card>
-        </v-dialog>
+        <ProductDialog v-model="dialog" :product="editingProduct" :categories="categories" :units="units"
+            @save="saveProduct" @cancel="closeDialog" />
     </div>
 </template>
 
 <script>
 import adminPaginationMixin from '../../../mixins/adminPaginationMixin';
-import { normalizeUploadPath, resolveUploadUrl } from '../../../utils/uploads';
+import ProductDialog from './ProductDialog.vue';
 
 export default {
+    components: {
+        ProductDialog
+    },
     mixins: [adminPaginationMixin],
     data() {
         return {
@@ -368,39 +236,6 @@ export default {
             ],
             dialog: false,
             editingProduct: null,
-            saving: false,
-            activeTab: 'basic',
-            form: {
-                name: '',
-                sku: '',
-                barcode: '',
-                category_id: null,
-                unit_id: null,
-                description: '',
-                image: '',
-                cost_price: 0,
-                selling_price: 0,
-                minimum_stock_level: 0,
-                opening_stock: 0,
-                track_serial: false,
-                is_active: true,
-            },
-            rules: {
-                required: value => {
-                    if (typeof value === 'number') {
-                        return value >= 0 || 'This field is required';
-                    }
-                    return !!value || 'This field is required';
-                },
-                minValue: value => {
-                    if (value === null || value === undefined || value === '') {
-                        return true;
-                    }
-                    return value >= 0 || 'Value must be greater than or equal to 0';
-                },
-            },
-            imageFile: null,
-            uploadingImage: false,
         };
     },
     async mounted() {
@@ -464,159 +299,28 @@ export default {
             }
         },
         openDialog(product) {
-            this.imageFile = null;
-            this.activeTab = 'basic';
-            if (product) {
-                this.editingProduct = product;
-                const imagePath = this.normalizeImageInput(product.image || '');
-                this.form = {
-                    name: product.name || '',
-                    sku: product.sku || '',
-                    barcode: product.barcode || '',
-                    category_id: product.category_id || null,
-                    unit_id: product.unit_id || null,
-                    description: product.description || '',
-                    image: imagePath,
-                    cost_price: product.cost_price || 0,
-                    selling_price: product.selling_price || 0,
-                    minimum_stock_level: product.minimum_stock_level || 0,
-                    opening_stock: product.opening_stock || 0,
-                    track_serial: product.track_serial || false,
-                    is_active: product.is_active !== undefined ? product.is_active : true,
-                };
-            } else {
-                this.editingProduct = null;
-                this.form = {
-                    name: '',
-                    sku: '',
-                    barcode: '',
-                    category_id: this.categories.length > 0 ? this.categories[0].value : null,
-                    unit_id: this.units.length > 0 ? this.units[0].value : null,
-                    description: '',
-                    image: '',
-                    cost_price: 0,
-                    selling_price: 0,
-                    minimum_stock_level: 0,
-                    opening_stock: 0,
-                    track_serial: false,
-                    is_active: true,
-                };
-            }
+            this.editingProduct = product;
             this.dialog = true;
         },
         closeDialog() {
             this.dialog = false;
             this.editingProduct = null;
-            this.activeTab = 'basic';
-            this.form = {
-                name: '',
-                sku: '',
-                barcode: '',
-                category_id: this.categories.length > 0 ? this.categories[0].value : null,
-                unit_id: this.units.length > 0 ? this.units[0].value : null,
-                description: '',
-                image: '',
-                cost_price: 0,
-                selling_price: 0,
-                minimum_stock_level: 0,
-                opening_stock: 0,
-                track_serial: false,
-                is_active: true,
-            };
-            this.imageFile = null;
-            if (this.$refs.form) {
-                this.$refs.form.resetValidation();
-            }
         },
-        async handleImageUpload() {
-            if (!this.imageFile) {
-                return;
-            }
-
-            const fileToUpload = Array.isArray(this.imageFile) ? this.imageFile[0] : this.imageFile;
-            if (!fileToUpload) {
-                return;
-            }
-
-            if (!fileToUpload.type.startsWith('image/')) {
-                this.showError('Please select a valid image file');
-                this.imageFile = null;
-                return;
-            }
-
-            const maxSize = 5 * 1024 * 1024;
-            if (fileToUpload.size > maxSize) {
-                this.showError('File size must be less than 5MB');
-                this.imageFile = null;
-                return;
-            }
-
-            this.uploadingImage = true;
-            try {
-                const formData = new FormData();
-                formData.append('image', fileToUpload);
-                formData.append('folder', 'products');
-                if (this.form.name) {
-                    formData.append('prefix', this.form.name);
-                }
-
-                const token = localStorage.getItem('admin_token');
-                const response = await this.$axios.post('/api/v1/upload/image', formData, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        'Content-Type': 'multipart/form-data'
-                    }
-                });
-
-                if (response.data.success) {
-                    const uploadedPath = this.normalizeImageInput(response.data.path || response.data.url);
-                    this.form.image = uploadedPath;
-                    this.imageFile = null;
-                    this.showSuccess('Image uploaded successfully');
-                } else {
-                    throw new Error(response.data.message || 'Failed to upload image');
-                }
-            } catch (error) {
-                console.error('Error uploading image:', error);
-                let errorMessage = 'Failed to upload image';
-                if (error.response) {
-                    errorMessage = error.response.data?.message || error.response.statusText || errorMessage;
-                } else if (error.message) {
-                    errorMessage = error.message;
-                }
-                this.showError(errorMessage);
-                this.imageFile = null;
-            } finally {
-                this.uploadingImage = false;
-            }
-        },
-        clearImage() {
-            this.form.image = '';
-            this.imageFile = null;
-        },
-        async saveProduct() {
-            if (!this.$refs.form.validate()) {
-                return;
-            }
-
-            this.saving = true;
+        async saveProduct({ data, isEditing }) {
             try {
                 const token = localStorage.getItem('admin_token');
-                const url = this.editingProduct
+                const url = isEditing
                     ? `/api/v1/products/${this.editingProduct.id}`
                     : '/api/v1/products';
 
-                const data = { ...this.form };
-                data.image = this.normalizeImageInput(data.image);
-
-                const method = this.editingProduct ? 'put' : 'post';
+                const method = isEditing ? 'put' : 'post';
 
                 await axios[method](url, data, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
 
                 this.showSuccess(
-                    this.editingProduct ? 'Product updated successfully' : 'Product created successfully'
+                    isEditing ? 'Product updated successfully' : 'Product created successfully'
                 );
                 this.closeDialog();
                 await this.loadProducts();
@@ -636,8 +340,7 @@ export default {
                 }
 
                 this.showError(message);
-            } finally {
-                this.saving = false;
+                throw error; // Re-throw so the dialog can handle the error state
             }
         },
         async deleteProduct(product) {
@@ -658,10 +361,10 @@ export default {
             }
         },
         formatCurrency(value) {
-            if (value === null || value === undefined) return '$0.00';
-            return new Intl.NumberFormat('en-US', {
-                style: 'currency',
-                currency: 'USD'
+            if (value === null || value === undefined) return '৳0.00';
+            return '৳' + new Intl.NumberFormat('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
             }).format(value);
         },
         onPerPageChange() {
@@ -672,12 +375,6 @@ export default {
             this.handleSort(field);
             this.loadProducts();
         },
-        normalizeImageInput(imageValue) {
-            return normalizeUploadPath(imageValue);
-        },
-        resolveImageUrl(value) {
-            return resolveUploadUrl(value);
-        },
     }
 };
 </script>
@@ -687,4 +384,3 @@ export default {
     gap: 8px;
 }
 </style>
-

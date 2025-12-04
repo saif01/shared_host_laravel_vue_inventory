@@ -166,7 +166,7 @@
                                         </v-col>
                                         <v-col cols="12" md="6">
                                             <v-text-field v-model.number="form.shipping_cost" label="Shipping Cost"
-                                                type="number" min="0" step="0.01" prefix="$" @input="calculateTotals"></v-text-field>
+                                                type="number" min="0" step="0.01" prefix="৳" @input="calculateTotals"></v-text-field>
                                         </v-col>
                                         <v-col cols="12">
                                             <v-textarea v-model="form.notes" label="Notes" variant="outlined"
@@ -575,10 +575,10 @@ export default {
             alert(`Invoice: ${purchase.invoice_number}\nSupplier: ${purchase.supplier?.name}\nTotal: ${this.formatCurrency(purchase.total_amount)}`);
         },
         formatCurrency(value) {
-            if (value === null || value === undefined) return '$0.00';
-            return new Intl.NumberFormat('en-US', {
-                style: 'currency',
-                currency: 'USD'
+            if (value === null || value === undefined) return '৳0.00';
+            return '৳' + new Intl.NumberFormat('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
             }).format(value);
         },
         getStatusColor(status) {

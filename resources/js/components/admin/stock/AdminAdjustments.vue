@@ -191,7 +191,7 @@
                                             </td>
                                             <td>
                                                 <v-text-field v-model.number="item.unit_cost" type="number" min="0"
-                                                    step="0.01" density="compact" prefix="$"></v-text-field>
+                                                    step="0.01" density="compact" prefix="৳"></v-text-field>
                                             </td>
                                             <td>
                                                 <span v-if="item.available_stock !== null"

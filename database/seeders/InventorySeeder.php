@@ -46,7 +46,10 @@ class InventorySeeder extends Seeder
         ];
 
         foreach ($units as $unit) {
-            Unit::create($unit);
+            Unit::updateOrCreate(
+                ['code' => $unit['code']],
+                $unit
+            );
         }
 
         // 2. Create Categories
@@ -60,7 +63,10 @@ class InventorySeeder extends Seeder
         ];
 
         foreach ($categories as $category) {
-            Category::create($category);
+            Category::updateOrCreate(
+                ['slug' => $category['slug']],
+                $category
+            );
         }
 
         // 3. Create Warehouses
@@ -93,7 +99,10 @@ class InventorySeeder extends Seeder
 
         $warehouseIds = [];
         foreach ($warehouses as $warehouse) {
-            $w = Warehouse::create($warehouse);
+            $w = Warehouse::updateOrCreate(
+                ['code' => $warehouse['code']],
+                $warehouse
+            );
             $warehouseIds[] = $w->id;
         }
 
@@ -133,7 +142,10 @@ class InventorySeeder extends Seeder
 
         $supplierIds = [];
         foreach ($suppliers as $supplier) {
-            $s = Supplier::create($supplier);
+            $s = Supplier::updateOrCreate(
+                ['code' => $supplier['code']],
+                $supplier
+            );
             $supplierIds[] = $s->id;
         }
 
@@ -173,12 +185,15 @@ class InventorySeeder extends Seeder
 
         $customerIds = [];
         foreach ($customers as $customer) {
-            $c = Customer::create($customer);
+            $c = Customer::updateOrCreate(
+                ['code' => $customer['code']],
+                $customer
+            );
             $customerIds[] = $c->id;
         }
 
-        // 6. Create Products
-        $products = [
+        // 6. Create Products (Amounts in Bangladeshi Taka ৳)
+        $productsData = [
             [
                 'name' => 'Laptop Computer',
                 'sku' => 'LAP-001',
@@ -186,11 +201,11 @@ class InventorySeeder extends Seeder
                 'category_id' => 1, // Electronics
                 'unit_id' => 1, // PCS
                 'description' => 'High-performance laptop computer',
-                'cost_price' => 800.00,
-                'selling_price' => 1200.00,
+                'cost_price' => 75000.00,
+                'selling_price' => 95000.00,
                 'minimum_stock_level' => 10,
-                'opening_stock' => 50,
                 'track_serial' => true,
+                'opening_stock' => 50,
             ],
             [
                 'name' => 'Wireless Mouse',
@@ -199,11 +214,11 @@ class InventorySeeder extends Seeder
                 'category_id' => 1, // Electronics
                 'unit_id' => 1, // PCS
                 'description' => 'Ergonomic wireless mouse',
-                'cost_price' => 15.00,
-                'selling_price' => 25.00,
+                'cost_price' => 1200.00,
+                'selling_price' => 1800.00,
                 'minimum_stock_level' => 50,
-                'opening_stock' => 200,
                 'track_serial' => false,
+                'opening_stock' => 200,
             ],
             [
                 'name' => 'Office Chair',
@@ -212,11 +227,11 @@ class InventorySeeder extends Seeder
                 'category_id' => 5, // Furniture
                 'unit_id' => 1, // PCS
                 'description' => 'Comfortable office chair',
-                'cost_price' => 150.00,
-                'selling_price' => 250.00,
+                'cost_price' => 12000.00,
+                'selling_price' => 18000.00,
                 'minimum_stock_level' => 5,
-                'opening_stock' => 30,
                 'track_serial' => false,
+                'opening_stock' => 30,
             ],
             [
                 'name' => 'Printer Paper A4',
@@ -225,11 +240,11 @@ class InventorySeeder extends Seeder
                 'category_id' => 4, // Office Supplies
                 'unit_id' => 3, // BOX
                 'description' => 'Premium A4 printer paper',
-                'cost_price' => 20.00,
-                'selling_price' => 35.00,
+                'cost_price' => 1800.00,
+                'selling_price' => 2500.00,
                 'minimum_stock_level' => 20,
-                'opening_stock' => 100,
                 'track_serial' => false,
+                'opening_stock' => 100,
             ],
             [
                 'name' => 'Coffee Beans',
@@ -238,11 +253,11 @@ class InventorySeeder extends Seeder
                 'category_id' => 3, // Food & Beverages
                 'unit_id' => 2, // KG
                 'description' => 'Premium arabica coffee beans',
-                'cost_price' => 25.00,
-                'selling_price' => 45.00,
+                'cost_price' => 2200.00,
+                'selling_price' => 3500.00,
                 'minimum_stock_level' => 10,
-                'opening_stock' => 50,
                 'track_serial' => false,
+                'opening_stock' => 50,
             ],
             [
                 'name' => 'T-Shirt',
@@ -251,44 +266,62 @@ class InventorySeeder extends Seeder
                 'category_id' => 2, // Clothing
                 'unit_id' => 1, // PCS
                 'description' => 'Cotton t-shirt',
-                'cost_price' => 10.00,
-                'selling_price' => 20.00,
+                'cost_price' => 800.00,
+                'selling_price' => 1500.00,
                 'minimum_stock_level' => 100,
-                'opening_stock' => 500,
                 'track_serial' => false,
+                'opening_stock' => 500,
             ],
         ];
 
         $productIds = [];
-        foreach ($products as $product) {
-            $p = Product::create($product);
+        foreach ($productsData as $productData) {
+            $openingStock = $productData['opening_stock'];
+            unset($productData['opening_stock']); // Remove opening_stock before creating product
+            
+            $p = Product::updateOrCreate(
+                ['sku' => $productData['sku']],
+                $productData
+            );
             $productIds[] = $p->id;
 
             // Create opening stock for each warehouse
             foreach ($warehouseIds as $warehouseId) {
-                $stock = Stock::create([
-                    'product_id' => $p->id,
-                    'warehouse_id' => $warehouseId,
-                    'quantity' => $product['opening_stock'],
-                    'average_cost' => $product['cost_price'],
-                    'total_value' => $product['opening_stock'] * $product['cost_price'],
-                ]);
+                $stock = Stock::updateOrCreate(
+                    [
+                        'product_id' => $p->id,
+                        'warehouse_id' => $warehouseId,
+                    ],
+                    [
+                        'quantity' => $openingStock,
+                        'average_cost' => $productData['cost_price'],
+                        'total_value' => $openingStock * $productData['cost_price'],
+                    ]
+                );
 
-                // Create stock ledger entry for opening stock
-                StockLedger::create([
-                    'product_id' => $p->id,
-                    'warehouse_id' => $warehouseId,
-                    'type' => 'in',
-                    'reference_type' => 'opening_stock',
-                    'reference_id' => null,
-                    'reference_number' => 'OPEN-' . $p->sku,
-                    'quantity' => $product['opening_stock'],
-                    'unit_cost' => $product['cost_price'],
-                    'total_cost' => $product['opening_stock'] * $product['cost_price'],
-                    'balance_after' => $product['opening_stock'],
-                    'created_by' => $admin?->id,
-                    'transaction_date' => now()->subDays(30),
-                ]);
+                // Create stock ledger entry for opening stock (only if it doesn't exist)
+                $existingLedger = StockLedger::where('product_id', $p->id)
+                    ->where('warehouse_id', $warehouseId)
+                    ->where('reference_type', 'opening_stock')
+                    ->where('reference_number', 'OPEN-' . $p->sku)
+                    ->first();
+                
+                if (!$existingLedger) {
+                    StockLedger::create([
+                        'product_id' => $p->id,
+                        'warehouse_id' => $warehouseId,
+                        'type' => 'in',
+                        'reference_type' => 'opening_stock',
+                        'reference_id' => null,
+                        'reference_number' => 'OPEN-' . $p->sku,
+                        'quantity' => $openingStock,
+                        'unit_cost' => $productData['cost_price'],
+                        'total_cost' => $openingStock * $productData['cost_price'],
+                        'balance_after' => $openingStock,
+                        'created_by' => $admin?->id,
+                        'transaction_date' => now()->subDays(30),
+                    ]);
+                }
             }
         }
 
@@ -304,7 +337,7 @@ class InventorySeeder extends Seeder
             'approved_at' => now()->subDays(19),
         ]);
 
-        // 8. Create Purchase Order
+        // 8. Create Purchase Order (Amounts in BDT ৳)
         $po = PurchaseOrder::create([
             'po_number' => 'PO-' . strtoupper(Str::random(6)),
             'purchase_request_id' => $pr->id,
@@ -313,10 +346,10 @@ class InventorySeeder extends Seeder
             'order_date' => now()->subDays(18),
             'expected_delivery_date' => now()->subDays(10),
             'status' => 'completed',
-            'subtotal' => 5000.00,
-            'tax_amount' => 500.00,
-            'discount_amount' => 100.00,
-            'total_amount' => 5400.00,
+            'subtotal' => 1620000.00,
+            'tax_amount' => 40500.00,
+            'discount_amount' => 5000.00,
+            'total_amount' => 1655500.00,
             'notes' => 'Bulk order for restocking',
             'created_by' => $admin?->id,
         ]);
@@ -326,20 +359,20 @@ class InventorySeeder extends Seeder
             'purchase_order_id' => $po->id,
             'product_id' => $productIds[0],
             'quantity' => 20,
-            'unit_price' => 800.00,
+            'unit_price' => 75000.00,
             'discount' => 0,
-            'tax' => 160.00,
-            'total' => 16000.00,
+            'tax' => 37500.00,
+            'total' => 1500000.00,
         ]);
 
         PurchaseOrderItem::create([
             'purchase_order_id' => $po->id,
             'product_id' => $productIds[1],
             'quantity' => 100,
-            'unit_price' => 15.00,
-            'discount' => 50.00,
-            'tax' => 145.00,
-            'total' => 1500.00,
+            'unit_price' => 1200.00,
+            'discount' => 3000.00,
+            'tax' => 3000.00,
+            'total' => 120000.00,
         ]);
 
         // 9. Create GRN
@@ -360,8 +393,8 @@ class InventorySeeder extends Seeder
             'product_id' => $productIds[0],
             'ordered_quantity' => 20,
             'received_quantity' => 20,
-            'unit_price' => 800.00,
-            'total' => 16000.00,
+            'unit_price' => 75000.00,
+            'total' => 1500000.00,
         ]);
 
         GrnItem::create([
@@ -369,11 +402,11 @@ class InventorySeeder extends Seeder
             'product_id' => $productIds[1],
             'ordered_quantity' => 100,
             'received_quantity' => 100,
-            'unit_price' => 15.00,
-            'total' => 1500.00,
+            'unit_price' => 1200.00,
+            'total' => 120000.00,
         ]);
 
-        // 10. Create Purchase (Invoice)
+        // 10. Create Purchase (Invoice) (Amounts in BDT ৳)
         $purchase = Purchase::create([
             'invoice_number' => 'INV-P-' . strtoupper(Str::random(6)),
             'supplier_id' => $supplierIds[0],
@@ -382,13 +415,13 @@ class InventorySeeder extends Seeder
             'invoice_date' => now()->subDays(10),
             'due_date' => now()->addDays(20),
             'status' => 'partial',
-            'subtotal' => 5000.00,
-            'tax_amount' => 500.00,
-            'discount_amount' => 100.00,
+            'subtotal' => 1620000.00,
+            'tax_amount' => 40500.00,
+            'discount_amount' => 5000.00,
             'shipping_cost' => 0,
-            'total_amount' => 5400.00,
-            'paid_amount' => 2700.00,
-            'balance_amount' => 2700.00,
+            'total_amount' => 1655500.00,
+            'paid_amount' => 827750.00,
+            'balance_amount' => 827750.00,
             'notes' => 'Payment terms: Net 30',
             'created_by' => $admin?->id,
         ]);
@@ -397,20 +430,20 @@ class InventorySeeder extends Seeder
             'purchase_id' => $purchase->id,
             'product_id' => $productIds[0],
             'quantity' => 20,
-            'unit_price' => 800.00,
+            'unit_price' => 75000.00,
             'discount' => 0,
-            'tax' => 160.00,
-            'total' => 16000.00,
+            'tax' => 37500.00,
+            'total' => 1500000.00,
         ]);
 
         PurchaseItem::create([
             'purchase_id' => $purchase->id,
             'product_id' => $productIds[1],
             'quantity' => 100,
-            'unit_price' => 15.00,
-            'discount' => 50.00,
-            'tax' => 145.00,
-            'total' => 1500.00,
+            'unit_price' => 1200.00,
+            'discount' => 3000.00,
+            'tax' => 3000.00,
+            'total' => 120000.00,
         ]);
 
         // Update stock and ledger for purchase
@@ -449,7 +482,7 @@ class InventorySeeder extends Seeder
             }
         }
 
-        // 11. Create Sales Order
+        // 11. Create Sales Order (Amounts in BDT ৳)
         $salesOrder = SalesOrder::create([
             'order_number' => 'SO-' . strtoupper(Str::random(6)),
             'customer_id' => $customerIds[0],
@@ -457,10 +490,10 @@ class InventorySeeder extends Seeder
             'order_date' => now()->subDays(5),
             'delivery_date' => now()->subDays(2),
             'status' => 'completed',
-            'subtotal' => 1500.00,
-            'tax_amount' => 150.00,
-            'discount_amount' => 50.00,
-            'total_amount' => 1600.00,
+            'subtotal' => 113000.00,
+            'tax_amount' => 5650.00,
+            'discount_amount' => 2000.00,
+            'total_amount' => 116650.00,
             'notes' => 'Regular customer order',
             'created_by' => $admin?->id,
         ]);
@@ -469,23 +502,23 @@ class InventorySeeder extends Seeder
             'sales_order_id' => $salesOrder->id,
             'product_id' => $productIds[0],
             'quantity' => 1,
-            'unit_price' => 1200.00,
+            'unit_price' => 95000.00,
             'discount' => 0,
-            'tax' => 120.00,
-            'total' => 1200.00,
+            'tax' => 4750.00,
+            'total' => 95000.00,
         ]);
 
         SalesOrderItem::create([
             'sales_order_id' => $salesOrder->id,
             'product_id' => $productIds[1],
             'quantity' => 10,
-            'unit_price' => 25.00,
-            'discount' => 50.00,
-            'tax' => 30.00,
-            'total' => 250.00,
+            'unit_price' => 1800.00,
+            'discount' => 2000.00,
+            'tax' => 900.00,
+            'total' => 18000.00,
         ]);
 
-        // 12. Create Sale (Invoice)
+        // 12. Create Sale (Invoice) (Amounts in BDT ৳)
         $sale = Sale::create([
             'invoice_number' => 'INV-S-' . strtoupper(Str::random(6)),
             'customer_id' => $customerIds[0],
@@ -494,13 +527,13 @@ class InventorySeeder extends Seeder
             'invoice_date' => now()->subDays(2),
             'due_date' => now()->addDays(28),
             'status' => 'pending',
-            'subtotal' => 1500.00,
-            'tax_amount' => 150.00,
-            'discount_amount' => 50.00,
+            'subtotal' => 113000.00,
+            'tax_amount' => 5650.00,
+            'discount_amount' => 2000.00,
             'shipping_cost' => 0,
-            'total_amount' => 1600.00,
+            'total_amount' => 116650.00,
             'paid_amount' => 0,
-            'balance_amount' => 1600.00,
+            'balance_amount' => 116650.00,
             'notes' => 'Payment pending',
             'created_by' => $admin?->id,
         ]);
@@ -509,20 +542,20 @@ class InventorySeeder extends Seeder
             'sale_id' => $sale->id,
             'product_id' => $productIds[0],
             'quantity' => 1,
-            'unit_price' => 1200.00,
+            'unit_price' => 95000.00,
             'discount' => 0,
-            'tax' => 120.00,
-            'total' => 1200.00,
+            'tax' => 4750.00,
+            'total' => 95000.00,
         ]);
 
         SalesItem::create([
             'sale_id' => $sale->id,
             'product_id' => $productIds[1],
             'quantity' => 10,
-            'unit_price' => 25.00,
-            'discount' => 50.00,
-            'tax' => 30.00,
-            'total' => 250.00,
+            'unit_price' => 1800.00,
+            'discount' => 2000.00,
+            'tax' => 900.00,
+            'total' => 18000.00,
         ]);
 
         // Update stock and ledger for sales

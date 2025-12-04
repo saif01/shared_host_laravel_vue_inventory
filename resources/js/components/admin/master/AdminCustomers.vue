@@ -192,7 +192,7 @@
                             <v-window-item value="financial">
                                 <div class="pa-4">
                                     <v-text-field v-model.number="form.opening_balance" label="Opening Balance"
-                                        type="number" step="0.01" prefix="$" variant="outlined" class="mb-4"></v-text-field>
+                                        type="number" step="0.01" prefix="৳" variant="outlined" class="mb-4"></v-text-field>
 
                                     <v-textarea v-model="form.notes" label="Notes" variant="outlined" rows="4"
                                         class="mb-4"></v-textarea>
@@ -401,10 +401,10 @@ export default {
             alert(`Customer: ${customer.name}\nCompany: ${customer.company_name || 'N/A'}\nEmail: ${customer.email || 'N/A'}\nBalance: ${this.formatCurrency(customer.current_balance)}`);
         },
         formatCurrency(value) {
-            if (value === null || value === undefined) return '$0.00';
-            return new Intl.NumberFormat('en-US', {
-                style: 'currency',
-                currency: 'USD'
+            if (value === null || value === undefined) return '৳0.00';
+            return '৳' + new Intl.NumberFormat('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
             }).format(value);
         },
         onPerPageChange() {

@@ -1,14 +1,14 @@
 /**
  * Format currency value
  * @param {number|string} value - Value to format
- * @param {string} currency - Currency symbol (default: $)
+ * @param {string} currency - Currency symbol (default: ৳)
  * @returns {string} Formatted currency string
  */
-export function formatCurrency(value, currency = '$') {
-    if (!value) return `${currency}0.00`;
+export function formatCurrency(value, currency = '৳') {
+    if (!value && value !== 0) return `${currency}0.00`;
     const numValue = parseFloat(value);
     if (isNaN(numValue)) return `${currency}0.00`;
-    return `${currency}${numValue.toFixed(2)}`;
+    return `${currency}${numValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
 /**
