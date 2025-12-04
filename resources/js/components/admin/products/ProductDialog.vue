@@ -35,8 +35,17 @@
                                     <v-col cols="12" md="6">
                                         <v-select v-model="form.category_id" :items="categories" item-title="label"
                                             item-value="value" label="Category *" :rules="[rules.required]" required
-                                            class="mb-4"></v-select>
+                                            @update:model-value="onCategoryChange" class="mb-4"></v-select>
                                     </v-col>
+                                    <v-col cols="12" md="6">
+                                        <v-select v-model="form.sub_category_id" :items="filteredSubCategories"
+                                            item-title="label" item-value="value" label="Subcategory" clearable
+                                            :disabled="!form.category_id || filteredSubCategories.length === 0"
+                                            hint="Select a category first" persistent-hint class="mb-4"></v-select>
+                                    </v-col>
+                                </v-row>
+
+                                <v-row>
                                     <v-col cols="12" md="6">
                                         <v-select v-model="form.unit_id" :items="units" item-title="label"
                                             item-value="value" label="Unit of Measure *" :rules="[rules.required]"
@@ -312,6 +321,10 @@ export default {
         units: {
             type: Array,
             default: () => []
+        },
+        subCategories: {
+            type: Array,
+            default: () => []
         }
     },
     emits: ['update:modelValue', 'save', 'cancel'],
@@ -392,6 +405,12 @@ export default {
         },
         calculateFinalPrice() {
             return this.form.selling_price - this.calculateDiscount + this.calculateTax;
+        },
+        filteredSubCategories() {
+            if (!this.form.category_id) {
+                return [];
+            }
+            return this.subCategories.filter(sub => sub.category_id === this.form.category_id);
         }
     },
     watch: {
@@ -568,6 +587,12 @@ export default {
         onCancel() {
             this.resetForm();
             this.$emit('cancel');
+        },
+        onCategoryChange(newCategoryId) {
+            // Reset subcategory when category changes
+            if (this.form.category_id !== newCategoryId) {
+                this.form.sub_category_id = null;
+            }
         },
         normalizeImageInput(imageValue) {
             return normalizeUploadPath(imageValue);

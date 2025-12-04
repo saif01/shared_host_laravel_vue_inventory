@@ -11,22 +11,27 @@
         <v-card class="mb-4">
             <v-card-text>
                 <v-row>
-                    <v-col cols="12" md="3">
+                    <v-col cols="12" md="2">
                         <v-select v-model="perPage" :items="perPageOptions" label="Items per page"
                             prepend-inner-icon="mdi-format-list-numbered" variant="outlined" density="compact"
                             @update:model-value="onPerPageChange"></v-select>
                     </v-col>
-                    <v-col cols="12" md="3">
+                    <v-col cols="12" md="2">
                         <v-select v-model="categoryFilter" :items="categoryOptions" label="Filter by Category"
                             variant="outlined" density="compact" clearable
-                            @update:model-value="loadProducts"></v-select>
+                            @update:model-value="onCategoryFilterChange"></v-select>
                     </v-col>
-                    <v-col cols="12" md="3">
+                    <v-col cols="12" md="2">
+                        <v-select v-model="subCategoryFilter" :items="filteredSubCategoryOptions"
+                            label="Filter by Subcategory" variant="outlined" density="compact" clearable
+                            :disabled="!categoryFilter" @update:model-value="loadProducts"></v-select>
+                    </v-col>
+                    <v-col cols="12" md="2">
                         <v-select v-model="activeFilter" :items="activeOptions" label="Filter by Status"
                             variant="outlined" density="compact" clearable
                             @update:model-value="loadProducts"></v-select>
                     </v-col>
-                    <v-col cols="12" md="3">
+                    <v-col cols="12" md="4">
                         <v-text-field v-model="search" label="Search by name, SKU, barcode"
                             prepend-inner-icon="mdi-magnify" variant="outlined" density="compact" clearable
                             @input="loadProducts"></v-text-field>
@@ -66,6 +71,7 @@
                             </th>
                             <th>Barcode</th>
                             <th>Category</th>
+                            <th>Subcategory</th>
                             <th>Unit</th>
                             <th class="sortable" @click="onSort('cost_price')">
                                 <div class="d-flex align-center">
@@ -98,6 +104,9 @@
                             </td>
                             <td>
                                 <v-skeleton-loader type="text" width="120"></v-skeleton-loader>
+                            </td>
+                            <td>
+                                <v-skeleton-loader type="text" width="100"></v-skeleton-loader>
                             </td>
                             <td>
                                 <v-skeleton-loader type="text" width="100"></v-skeleton-loader>
@@ -145,8 +154,14 @@
                                     <span v-else class="text-caption text-grey">-</span>
                                 </td>
                                 <td>
-                                    <v-chip size="small" v-if="product.category">
+                                    <v-chip size="small" color="primary" variant="tonal" v-if="product.category">
                                         {{ product.category.name }}
+                                    </v-chip>
+                                    <span v-else class="text-caption text-grey">-</span>
+                                </td>
+                                <td>
+                                    <v-chip size="small" color="info" variant="tonal" v-if="product.sub_category">
+                                        {{ product.sub_category.name }}
                                     </v-chip>
                                     <span v-else class="text-caption text-grey">-</span>
                                 </td>
@@ -176,7 +191,7 @@
                                 </td>
                             </tr>
                             <tr v-if="products.length === 0">
-                                <td colspan="11" class="text-center py-4">No products found</td>
+                                <td colspan="12" class="text-center py-4">No products found</td>
                             </tr>
                         </template>
                     </tbody>
@@ -209,7 +224,7 @@
 
         <!-- Product Dialog -->
         <ProductDialog v-model="dialog" :product="editingProduct" :categories="categories" :units="units"
-            @save="saveProduct" @cancel="closeDialog" />
+            :sub-categories="subCategories" @save="saveProduct" @cancel="closeDialog" />
     </div>
 </template>
 
@@ -226,9 +241,12 @@ export default {
         return {
             products: [],
             categories: [],
+            subCategories: [],
             units: [],
             categoryFilter: null,
             categoryOptions: [],
+            subCategoryFilter: null,
+            subCategoryOptions: [],
             activeFilter: null,
             activeOptions: [
                 { title: 'Active', value: true },
@@ -238,8 +256,17 @@ export default {
             editingProduct: null,
         };
     },
+    computed: {
+        filteredSubCategoryOptions() {
+            if (!this.categoryFilter) {
+                return [];
+            }
+            return this.subCategoryOptions.filter(sub => sub.category_id === this.categoryFilter);
+        }
+    },
     async mounted() {
         await this.loadCategories();
+        await this.loadSubCategories();
         await this.loadUnits();
         await this.loadProducts();
     },
@@ -254,6 +281,9 @@ export default {
                 }
                 if (this.categoryFilter) {
                     params.category_id = this.categoryFilter;
+                }
+                if (this.subCategoryFilter) {
+                    params.sub_category_id = this.subCategoryFilter;
                 }
                 if (this.activeFilter !== null) {
                     params.is_active = this.activeFilter;
@@ -286,6 +316,23 @@ export default {
                 }));
             } catch (error) {
                 console.error('Error loading categories:', error);
+            }
+        },
+        async loadSubCategories() {
+            try {
+                const response = await this.$axios.get('/api/v1/products/sub-categories', {
+                    headers: this.getAuthHeaders()
+                });
+                this.subCategories = response.data.sub_categories || [];
+
+                // Populate subCategoryOptions for filter
+                this.subCategoryOptions = this.subCategories.map(sub => ({
+                    title: sub.label,
+                    value: sub.value,
+                    category_id: sub.category_id
+                }));
+            } catch (error) {
+                console.error('Error loading subcategories:', error);
             }
         },
         async loadUnits() {
@@ -373,6 +420,11 @@ export default {
         },
         onSort(field) {
             this.handleSort(field);
+            this.loadProducts();
+        },
+        onCategoryFilterChange() {
+            // Reset subcategory filter when category changes
+            this.subCategoryFilter = null;
             this.loadProducts();
         },
     }
