@@ -289,8 +289,8 @@ class InventorySeeder extends Seeder
             foreach ($warehouseIds as $warehouseId) {
                 $stock = Stock::updateOrCreate(
                     [
-                        'product_id' => $p->id,
-                        'warehouse_id' => $warehouseId,
+                    'product_id' => $p->id,
+                    'warehouse_id' => $warehouseId,
                     ],
                     [
                         'quantity' => $openingStock,
@@ -307,20 +307,20 @@ class InventorySeeder extends Seeder
                     ->first();
                 
                 if (!$existingLedger) {
-                    StockLedger::create([
-                        'product_id' => $p->id,
-                        'warehouse_id' => $warehouseId,
-                        'type' => 'in',
-                        'reference_type' => 'opening_stock',
-                        'reference_id' => null,
-                        'reference_number' => 'OPEN-' . $p->sku,
+                StockLedger::create([
+                    'product_id' => $p->id,
+                    'warehouse_id' => $warehouseId,
+                    'type' => 'in',
+                    'reference_type' => 'opening_stock',
+                    'reference_id' => null,
+                    'reference_number' => 'OPEN-' . $p->sku,
                         'quantity' => $openingStock,
                         'unit_cost' => $productData['cost_price'],
                         'total_cost' => $openingStock * $productData['cost_price'],
                         'balance_after' => $openingStock,
-                        'created_by' => $admin?->id,
-                        'transaction_date' => now()->subDays(30),
-                    ]);
+                    'created_by' => $admin?->id,
+                    'transaction_date' => now()->subDays(30),
+                ]);
                 }
             }
         }
